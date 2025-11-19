@@ -1,0 +1,38 @@
+set(CMAKE_DEBUG_POSTFIX "" CACHE STRING "Add postfix for Debug libraries")
+set(CMAKE_RELEASE_POSTFIX "" CACHE STRING "Add postfix for Release libraries")
+set(CMAKE_RELWITHDEBINFO_POSTFIX "" CACHE STRING "Add postfix for RelWithDebInfo libraries")
+set(CMAKE_MINSIZEREL_POSTFIX "" CACHE STRING "Add postfix for MinSizeRel libraries")
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+option(BUILD_SHARED_LIBS "Build libraries as shared instead of static" OFF)
+
+set(PROJECT_NAME "Project" CACHE STRING "Set your project name")
+set(MACRO_PREFIX "" CACHE STRING "Set prefix for macros")
+set(NAMESPACE_NAME "Project" CACHE STRING "Set name for namespaces")
+set(CXX_STANDARD "17" CACHE STRING "Set value for the C++ language version")
+set(C_STANDARD "11" CACHE STRING "Set value for the C language version")
+
+set(ROOT_PATH ${CMAKE_SOURCE_DIR})
+
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 0)
+set(VERSION_PATCH 0)
+set(PROJECT_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
+set(VERSION_FILE_NAME "VERSION.txt")
+set(VERSION_FILE_PATH "${ROOT_PATH}/${VERSION_FILE_NAME}")
+if(EXISTS ${VERSION_FILE_PATH})
+    file(READ ${VERSION_FILE_PATH} VERSION_CONTENT)
+    string(STRIP "${VERSION_CONTENT}" VERSION_CONTENT)
+    string(REPLACE "." ";" VERSION_PARTS "${VERSION_CONTENT}")
+
+    list(GET VERSION_PARTS 0 VERSION_MAJOR)
+    list(GET VERSION_PARTS 1 VERSION_MINOR)
+    list(GET VERSION_PARTS 2 VERSION_PATCH)
+    set(PROJECT_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+else()
+    message(WARNING "${VERSION_FILE_NAME} not found! Using default version ${PROJECT_VERSION}")
+endif()
+
+if(NOT "${MACRO_PREFIX}" STREQUAL "")
+    set(MACRO_PREFIX "${MACRO_PREFIX}_")
+endif()
