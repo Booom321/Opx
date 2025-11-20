@@ -14,9 +14,9 @@
         "CMAKE_MINSIZEREL_POSTFIX": "",
         "BUILD_SHARED_LIBS": "OFF",
 
-        "PROJECT_NAME": "Project",
-        "MACRO_PREFIX": "",
-        "NAMESPACE_NAME": "Project",
+        "PROJECT_NAME": "Opx",
+        "MACRO_PREFIX": "OPX",
+        "NAMESPACE_NAME": "Opx",
         "CXX_STANDARD": "17",
         "C_STANDARD": "11"
       }
