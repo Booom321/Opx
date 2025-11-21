@@ -31,5 +31,6 @@ message(STATUS "C_STANDARD: ${C_STANDARD}")
 message(STATUS "ROOT_PATH: \"${ROOT_PATH}\"")
 message(STATUS "===============================================================")
 
-add_subdirectory(Source)
 add_subdirectory(External)
+add_subdirectory(Source)
+add_subdirectory(Test)
