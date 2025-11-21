@@ -43,18 +43,18 @@ function(set_target_default_compile_options target scope)
     endif()
 endfunction()
 
-function(add_clang_format target_name TARGET_DIR)
+function(add_clang_format target_name target_dir)
     file(GLOB_RECURSE ALL_SOURCE_FILES
-        "${TARGET_DIR}/*.hpp"
-        "${TARGET_DIR}/*.cpp"
-        # "${TARGET_DIR}/*.h"
-        # "${TARGET_DIR}/*.c"
+        "${target_dir}/*.hpp"
+        "${target_dir}/*.cpp"
+        # "${target_dir}/*.h"
+        # "${target_dir}/*.c"
     )
     if(ALL_SOURCE_FILES)
         add_custom_target(
             ${target_name}
             COMMAND clang-format -i ${ALL_SOURCE_FILES}
-            COMMENT "Running clang-format on ${TARGET_DIR}"
+            COMMENT "Running clang-format on ${target_dir}"
             VERBATIM
         )
     endif()
