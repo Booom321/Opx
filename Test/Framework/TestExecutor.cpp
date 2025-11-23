@@ -65,7 +65,8 @@ TestSuite& TestExecutor::GetTestSuiteByName(const Char* suiteName) {
             return mTestSuites[i];
         }
     }
-    return mTestSuites.emplace_back(suiteName);
+    mTestSuites.emplace_back(suiteName);
+    return mTestSuites.back();
 }
 
 void TestExecutor::Execute() {
