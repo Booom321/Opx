@@ -418,5 +418,79 @@ TEST_CASE(TypeTraits, TypeTraits) {
         IsUnboundedArray_V<int[]> == true &&
         IsUnboundedArray_V<int[3]> == false
     );
+
+    TEST_EXPECT_TRUE(
+        IsSame_V<MakeUnsigned_T<char>, unsigned char> &&
+        IsSame_V<MakeUnsigned_T<int>, unsigned int> &&
+        IsSame_V<MakeUnsigned_T<volatile long>, volatile unsigned long>
+    );
+
+    enum class EUnsignedEnum : unsigned short {};
+    TEST_EXPECT_TRUE(
+        IsSame_V<MakeSigned_T<unsigned char>, signed char> &&
+        IsSame_V<MakeSigned_T<unsigned int>, signed int> &&
+        IsSame_V<MakeSigned_T<volatile unsigned long>, volatile signed long> &&
+        IsSame_V<MakeSigned_T<EUnsignedEnum>, signed short>
+    );
+
+    enum E1 {};
+    enum class E2 {};
+    enum class E3 : unsigned short {};
+    enum class E4 : int {};
+    TEST_EXPECT_TRUE(IsSame_V<UnderlyingType_T<E1>, unsigned int>);
+    TEST_EXPECT_TRUE(IsSame_V<UnderlyingType_T<E2>, int>);
+    TEST_EXPECT_TRUE(IsSame_V<UnderlyingType_T<E3>, unsigned short>);
+    TEST_EXPECT_TRUE(IsSame_V<UnderlyingType_T<E4>, int>);
+
+    TEST_EXPECT_TRUE(
+        IsSame_V<RemoveExtent_T<int>, int> &&
+        IsSame_V<RemoveExtent_T<int[]>, int> &&
+        IsSame_V<RemoveExtent_T<int[5]>, int> &&
+        IsSame_V<RemoveExtent_T<const int[3]>, const int> &&
+        IsSame_V<RemoveExtent_T<int[][4]>, int[4]> &&
+        IsSame_V<RemoveExtent_T<int[2][4]>, int[4]> &&
+        IsSame_V<RemoveExtent_T<int*>, int*> &&
+        IsSame_V<RemoveExtent_T<void>, void>
+    );
+
+    TEST_EXPECT_TRUE(
+        IsSame_V<RemoveAllExtents_T<int>, int> &&
+        IsSame_V<RemoveAllExtents_T<int[]>, int> &&
+        IsSame_V<RemoveAllExtents_T<int[5]>, int> &&
+        IsSame_V<RemoveAllExtents_T<const int[3]>, const int> &&
+        IsSame_V<RemoveAllExtents_T<int[][4]>, int> &&
+        IsSame_V<RemoveAllExtents_T<int[2][4]>, int> &&
+        IsSame_V<RemoveAllExtents_T<int*>, int*> &&
+        IsSame_V<RemoveAllExtents_T<void>, void>
+    );
+ 
+    TEST_EXPECT_TRUE(
+        IsSame_V<Decay_T<int>, int> &&
+        !IsSame_V<Decay_T<int>, float> &&
+        IsSame_V<Decay_T<int&>, int> &&
+        IsSame_V<Decay_T<int&&>, int> &&
+        IsSame_V<Decay_T<const int&>, int> &&
+        IsSame_V<Decay_T<int[2]>, int*> &&
+        !IsSame_V<Decay_T<int[4][2]>, int*> &&
+        !IsSame_V<Decay_T<int[4][2]>, int**> &&
+        IsSame_V<Decay_T<int[4][2]>, int(*)[2]> &&
+        IsSame_V<Decay_T<int(int)>, int(*)(int)>
+    );
+
+    TEST_EXPECT_TRUE(IsSame_V<RemoveCVRef_T<int>, int>);
+    TEST_EXPECT_TRUE(IsSame_V<RemoveCVRef_T<int&>, int>);
+    TEST_EXPECT_TRUE(IsSame_V<RemoveCVRef_T<int&&>, int>);
+    TEST_EXPECT_TRUE(IsSame_V<RemoveCVRef_T<const int&>, int>);
+    TEST_EXPECT_TRUE(IsSame_V<RemoveCVRef_T<const int[2]>, int[2]>);
+    TEST_EXPECT_TRUE(IsSame_V<RemoveCVRef_T<const int(&)[2]>, int[2]>);
+    TEST_EXPECT_TRUE(IsSame_V<RemoveCVRef_T<int(int)>, int(int)>);
+
+    TEST_EXPECT_TRUE(
+        IsSame_V<EnableIf_T<true, int>, int> &&
+        IsSame_V<EnableIf_T<true, void>, void> &&
+        IsSame_V<EnableIf_T<true, const int>, const int> &&
+        IsSame_V<EnableIf_T<true>, void>
+    );
+
 }
 // clang-format on
