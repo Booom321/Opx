@@ -93,8 +93,8 @@ void TestExecutor::RunTestSuite(TestSuite& suite) {
     std::deque<TestCase>& testCases = suite.GetTestCases();
     const Int32 numTestCases = static_cast<Int32>(testCases.size());
     const Char* suiteName = suite.GetName();
-    printf((numTestCases == 1) ? "%sTest suite%s %s---%s %s (%d test case)\n" : "%sTest suite%s %s---%s %s (%d test cases)\n", kWhiteBold, kReset,
-           kDark, kReset, suiteName, numTestCases);
+    printf((numTestCases == 1) ? "%sTest suite --- %s (%d test case)%s\n" : "%sTest suite --- %s (%d test cases)%s\n", kWhiteBold, suiteName,
+           numTestCases, kReset);
 
     TestTimer timer{};
     TestCaseResult result{};
@@ -118,13 +118,14 @@ void TestExecutor::RunTestSuite(TestSuite& suite) {
 
 void TestExecutor::ProcessTestCaseResult(const TestCaseResult& result) {
     if (result.IsPassed()) {
-        printf(">> %sTest case |%s %s (%.3lf ms) ... %sPassed%s\n", kDark, kReset, result.GetTestCaseName(), result.GetElapsedTime(), kGreenBold,
-               kReset);
+        printf("%s>>%s %sTest case%s %s|%s %s (%.3lf ms) ... %sPassed%s\n", kWhiteBold, kReset, kDark, kReset, kWhiteBold, kReset,
+               result.GetTestCaseName(), result.GetElapsedTime(), kGreenBold, kReset);
         ++mNumPassedTestCases;
         return;
     }
 
-    printf(">> %sTest case |%s %s (%.3lf ms) ... %sFailed%s\n", kDark, kReset, result.GetTestCaseName(), result.GetElapsedTime(), kRedBold, kReset);
+    printf("%s>>%s %sTest case%s %s|%s %s (%.3lf ms) ... %sFailed%s\n", kWhiteBold, kReset, kDark, kReset, kWhiteBold, kReset,
+           result.GetTestCaseName(), result.GetElapsedTime(), kRedBold, kReset);
     ++mNumFailedTestCases;
 
     const std::vector<FailedTestInfo>& infos = result.GetInfos();
