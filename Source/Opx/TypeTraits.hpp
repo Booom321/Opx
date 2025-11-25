@@ -384,6 +384,16 @@ namespace Details {
     struct IsUnsignedImpl : BoolConstant<T(0) < T(-1)> {};
     template <typename T>
     struct IsUnsignedImpl<T, false> : FalseType {};
+
+    template <typename T>
+    TrueType TestPtrConv(const volatile T*);
+    template <typename>
+    FalseType TestPtrConv(const volatile void*);
+
+    template <typename T, typename U>
+    auto TestIsBaseOf(int) -> decltype(TestPtrConv<T>(static_cast<U*>(nullptr)));
+    template <typename, typename>
+    auto TestIsBaseOf(...) -> TrueType;
 }  // namespace Details
 
 template <typename T>
@@ -429,5 +439,122 @@ template <typename T>
 struct IsUnboundedArray<T[]> : TrueType {};
 template <typename T>
 OPX_CONSTEXPR Bool IsUnboundedArray_V = IsUnboundedArray<T>::value;
+
+template <typename Base, typename Derived>
+struct IsBaseOf : BoolConstant<IsClass_V<Base> && IsClass_V<Derived>&& decltype(Details::TestIsBaseOf<Base, Derived>(0))::value> {};
+template <typename Base, typename Derived>
+OPX_CONSTEXPR Bool IsBaseOf_V = IsBaseOf<Base, Derived>::value;
+
+template <typename T>
+struct AlignmentOf : IntegralConstant<SizeT, alignof(T)> {};
+template <typename T>
+OPX_CONSTEXPR SizeT AlignmentOf_V = AlignmentOf<T>::value;
+
+template <typename T>
+struct Rank : public IntegralConstant<SizeT, 0> {};
+template <typename T>
+struct Rank<T[]> : public IntegralConstant<SizeT, Rank<T>::value + 1> {};
+template <typename T, SizeT N>
+struct Rank<T[N]> : public IntegralConstant<SizeT, Rank<T>::value + 1> {};
+template <typename T>
+OPX_CONSTEXPR SizeT Rank_V = Rank<T>::value;
+
+template <typename T, unsigned N = 0>
+struct Extent : IntegralConstant<SizeT, 0> {};
+template <typename T>
+struct Extent<T[], 0> : IntegralConstant<SizeT, 0> {};
+template <typename T, unsigned N>
+struct Extent<T[], N> : Extent<T, N - 1> {};
+template <typename T, SizeT I>
+struct Extent<T[I], 0> : IntegralConstant<SizeT, I> {};
+template <typename T, SizeT I, unsigned N>
+struct Extent<T[I], N> : Extent<T, N - 1> {};
+template <typename T, unsigned N = 0>
+OPX_CONSTEXPR SizeT Extent_V = Extent<T, N>::value;
+
+template <typename T>
+struct UnderlyingType {
+    using type = std::underlying_type_t<T>;
+};
+template <typename T>
+using UnderlyingType_T = typename UnderlyingType<T>::type;
+
+template <typename T>
+struct MakeUnsigned {
+    using type = std::make_unsigned_t<T>;
+};
+template <typename T>
+using MakeUnsigned_T = typename MakeUnsigned<T>::type;
+
+template <typename T>
+struct MakeSigned {
+    using type = std::make_signed_t<T>;
+};
+template <typename T>
+using MakeSigned_T = typename MakeSigned<T>::type;
+
+template <typename T>
+struct RemoveExtent {
+    using type = T;
+};
+template <typename T>
+struct RemoveExtent<T[]> {
+    using type = T;
+};
+template <typename T, SizeT N>
+struct RemoveExtent<T[N]> {
+    using type = T;
+};
+template <typename T>
+using RemoveExtent_T = typename RemoveExtent<T>::type;
+
+template <typename T>
+struct RemoveAllExtents {
+    typedef T type;
+};
+template <typename T>
+struct RemoveAllExtents<T[]> {
+    typedef typename RemoveAllExtents<T>::type type;
+};
+template <typename T, SizeT N>
+struct RemoveAllExtents<T[N]> {
+    typedef typename RemoveAllExtents<T>::type type;
+};
+template <typename T>
+using RemoveAllExtents_T = typename RemoveAllExtents<T>::type;
+
+template <typename T>
+struct Decay {
+private:
+    using U = RemoveReference_T<T>;
+
+public:
+    using type = TypeChooser_T<IsArray_V<U>, AddPointer_T<RemoveExtent_T<U>>, TypeChooser_T<IsFunction_V<U>, AddPointer_T<U>, RemoveCV_T<U>>>;
+};
+template <typename T>
+using Decay_T = typename Decay<T>::type;
+
+template <typename T>
+struct RemoveCVRef {
+    using type = RemoveCV_T<RemoveReference_T<T>>;
+};
+template <typename T>
+using RemoveCVRef_T = typename RemoveCVRef<T>::type;
+
+template <Bool VALUE, typename T = void>
+struct EnableIf {};
+template <typename T>
+struct EnableIf<true, T> {
+    using type = T;
+};
+template <Bool VALUE, typename T = void>
+using EnableIf_T = typename EnableIf<VALUE, T>::type;
+
+template <typename F, typename... ArgTypes>
+struct InvokeResult {
+    using type = std::invoke_result_t<F, ArgTypes...>;
+};
+template <typename F, typename... ArgTypes>
+using InvokeResult_T = typename InvokeResult<F, ArgTypes...>::type;
 
 OPX_NAMESPACE_END
