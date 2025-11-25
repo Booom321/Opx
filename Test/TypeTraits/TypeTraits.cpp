@@ -22,7 +22,7 @@ struct PMTraits<U T::*> {
 void Foo() {}
 
 // clang-format off
-TEST_CASE(Base, TypeTraits) {
+TEST_CASE(TypeTraits, TypeTraits) {
     using namespace Opx;
 
     TEST_EXPECT_TRUE(
