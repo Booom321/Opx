@@ -372,9 +372,18 @@ OPX_CONSTEXPR Bool IsEmpty_V = IsEmpty<T>::value;
 namespace Details {
     template <typename T>
     TrueType TestIsPolymorphic(decltype(dynamic_cast<const volatile void*>(static_cast<T*>(nullptr))));
-
     template <typename T>
     FalseType TestIsPolymorphic(...);
+
+    template <typename T, Bool = IsArithmetic_V<T>>
+    struct IsSignedImpl : BoolConstant<T(-1) < T(0)> {};
+    template <typename T>
+    struct IsSignedImpl<T, false> : FalseType {};
+
+    template <typename T, Bool = IsArithmetic_V<T>>
+    struct IsUnsignedImpl : BoolConstant<T(0) < T(-1)> {};
+    template <typename T>
+    struct IsUnsignedImpl<T, false> : FalseType {};
 }  // namespace Details
 
 template <typename T>
@@ -383,8 +392,42 @@ template <typename T>
 OPX_CONSTEXPR Bool IsPolymorphic_V = IsPolymorphic<T>::value;
 
 template <typename T>
-struct IsAbstract : BoolConstant<std::is_abstract<T>::value> {};
+struct IsAbstract : BoolConstant<std::is_abstract_v<T>> {};
 template <typename T>
 OPX_CONSTEXPR Bool IsAbstract_V = IsAbstract<T>::value;
+
+template <typename T>
+struct IsFinal : BoolConstant<std::is_final_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsFinal_V = IsFinal<T>::value;
+
+template <typename T>
+struct IsAggregate : BoolConstant<std::is_aggregate_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsAggregate_V = IsAggregate<T>::value;
+
+template <typename T>
+struct IsSigned : Details::IsSignedImpl<T> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsSigned_V = IsSigned<T>::value;
+
+template <typename T>
+struct IsUnsigned : Details::IsUnsignedImpl<T> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsUnsigned_V = IsUnsigned<T>::value;
+
+template <typename T>
+struct IsBoundedArray : FalseType {};
+template <typename T, SizeT N>
+struct IsBoundedArray<T[N]> : TrueType {};
+template <typename T>
+OPX_CONSTEXPR Bool IsBoundedArray_V = IsBoundedArray<T>::value;
+
+template <typename T>
+struct IsUnboundedArray : FalseType {};
+template <typename T>
+struct IsUnboundedArray<T[]> : TrueType {};
+template <typename T>
+OPX_CONSTEXPR Bool IsUnboundedArray_V = IsUnboundedArray<T>::value;
 
 OPX_NAMESPACE_END
