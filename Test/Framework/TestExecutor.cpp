@@ -81,7 +81,8 @@ void TestExecutor::Execute() {
 
     const Int32 totalTestCases = mNumPassedTestCases + mNumFailedTestCases;
     printf("----------------------------------------------------------------------------------------------\n");
-    printf("Result: %s%d%% tests passed%s\n", kGreenBold, totalTestCases == 0 ? 100 : static_cast<Int32>(mNumPassedTestCases / totalTestCases * 100),
+    printf("Result: %s%d%% tests passed%s\n", kGreenBold,
+           totalTestCases == 0 ? 100 : static_cast<Int32>(static_cast<Float>(mNumPassedTestCases) / static_cast<Float>(totalTestCases) * 100.f),
            kReset);
     printf("        %s%d passed%s\n", kGreenBold, mNumPassedTestCases, kReset);
     printf("        %s%d failed%s\n", kRedBold, mNumFailedTestCases, kReset);
