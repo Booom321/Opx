@@ -354,4 +354,37 @@ struct IsVolatile<volatile T> : TrueType {};
 template <typename T>
 OPX_CONSTEXPR Bool IsVolatile_V = IsVolatile<T>::value;
 
+template <typename T>
+struct IsTriviallyCopyable : BoolConstant<std::is_trivially_copyable_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsTriviallyCopyable_V = IsTriviallyCopyable<T>::value;
+
+template <typename T>
+struct IsStandardLayout : BoolConstant<std::is_standard_layout_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsStandardLayout_V = IsStandardLayout<T>::value;
+
+template <typename T>
+struct IsEmpty : BoolConstant<std::is_empty_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsEmpty_V = IsEmpty<T>::value;
+
+namespace Details {
+    template <typename T>
+    TrueType TestIsPolymorphic(decltype(dynamic_cast<const volatile void*>(static_cast<T*>(nullptr))));
+
+    template <typename T>
+    FalseType TestIsPolymorphic(...);
+}  // namespace Details
+
+template <typename T>
+struct IsPolymorphic : decltype(Details::TestIsPolymorphic<T>(nullptr)) {};
+template <typename T>
+OPX_CONSTEXPR Bool IsPolymorphic_V = IsPolymorphic<T>::value;
+
+template <typename T>
+struct IsAbstract : BoolConstant<std::is_abstract<T>::value> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsAbstract_V = IsAbstract<T>::value;
+
 OPX_NAMESPACE_END
