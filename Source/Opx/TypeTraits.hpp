@@ -322,4 +322,36 @@ struct IsMemberObjectPointer : BoolConstant<IsMemberPointer_V<T> && !IsMemberFun
 template <typename T>
 OPX_CONSTEXPR Bool IsMemberObjectPointer_V = IsMemberObjectPointer<T>::value;
 
+template <typename T>
+struct IsArithmetic : BoolConstant<IsIntegral_V<T> || IsFloatingPoint_V<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsArithmetic_V = IsArithmetic<T>::value;
+
+template <typename T>
+struct IsScalar : BoolConstant<IsArithmetic_V<T> || IsEnum_V<T> || IsPointer_V<T> || IsMemberPointer_V<T> || IsNullPtr_V<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsScalar_V = IsScalar<T>::value;
+
+template <typename T>
+struct IsFundamental : BoolConstant<IsArithmetic_V<T> || IsVoid_V<T> || IsNullPtr_V<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsFundamental_V = IsFundamental<T>::value;
+
+template <typename T>
+struct IsObject : BoolConstant<IsScalar_V<T> || IsArray_V<T> || IsUnion_V<T> || IsClass_V<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsObject_V = IsObject<T>::value;
+
+template <typename T>
+struct IsCompound : BoolConstant<!IsFundamental_V<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsCompound_V = IsCompound<T>::value;
+
+template <typename T>
+struct IsVolatile : FalseType {};
+template <typename T>
+struct IsVolatile<volatile T> : TrueType {};
+template <typename T>
+OPX_CONSTEXPR Bool IsVolatile_V = IsVolatile<T>::value;
+
 OPX_NAMESPACE_END
