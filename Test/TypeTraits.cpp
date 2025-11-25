@@ -1,5 +1,7 @@
 #include "Framework/Framework.hpp"
 
+#include <atomic>
+
 #include <Opx/TypeTraits.hpp>
 
 int Func();
@@ -311,6 +313,98 @@ TEST_CASE(Base, TypeTraits) {
         IsMemberPointer_V<decltype(&StructA::Func)> &&
         !IsMemberPointer_V<int> &&
         !IsMemberPointer_V<int*>
+    );
+
+    TEST_EXPECT_TRUE(
+        IsFundamental_V<int> == true &&
+        IsFundamental_V<int&> == false &&
+        IsFundamental_V<int*> == false &&
+        IsFundamental_V<void> == true &&
+        IsFundamental_V<void*> == false &&
+        IsFundamental_V<float> == true &&
+        IsFundamental_V<float&> == false &&
+        IsFundamental_V<float*> == false &&
+        IsFundamental_V<std::nullptr_t> == true &&
+        IsFundamental_V<std::is_fundamental<int>> == false &&
+        IsFundamental_V<A> == false &&
+        IsFundamental_V<std::is_fundamental<A>::value_type>
+    );
+
+    enum class B : int { e };
+    TEST_EXPECT_TRUE(
+        IsArithmetic_V<bool>             &&
+        IsArithmetic_V<char>             &&
+        IsArithmetic_V<char const>       &&
+        IsArithmetic_V<int>              &&
+        IsArithmetic_V<int const>        &&
+        IsArithmetic_V<float>            &&
+        IsArithmetic_V<float const>      &&
+        IsArithmetic_V<std::size_t>      &&
+        !IsArithmetic_V<char&>           &&
+        !IsArithmetic_V<char*>           &&
+        !IsArithmetic_V<int&>            &&
+        !IsArithmetic_V<int*>            &&
+        !IsArithmetic_V<float&>          &&
+        !IsArithmetic_V<float*>          &&
+        !IsArithmetic_V<A>               &&
+        !IsArithmetic_V<B>               &&
+        !IsArithmetic_V<decltype(B::e)>  &&
+        !IsArithmetic_V<std::byte>       &&
+        !IsArithmetic_V<std::atomic_int> 
+    );
+
+    TEST_EXPECT_TRUE(
+        IsScalar_V<int> &&
+        IsScalar_V<const int> &&
+        IsScalar_V<float> &&
+        IsScalar_V<bool> &&
+        IsScalar_V<int*> &&
+        IsScalar_V<void*> &&
+        IsScalar_V<std::nullptr_t> &&
+        !IsScalar_V<int&> &&
+        !IsScalar_V<int[]> &&
+        !IsScalar_V<void> &&
+        !IsScalar_V<A>
+    );
+
+
+    TEST_EXPECT_TRUE(
+        !IsObject_V<void> &&
+        IsObject_V<int> &&
+        !IsObject_V<int&> &&
+        IsObject_V<int*> &&
+        !IsObject_V<int*&> &&
+        IsObject_V<A> &&
+        !IsObject_V<A&> &&
+        IsObject_V<A*> &&
+        !IsObject_V<int()> &&
+        IsObject_V<int(*)()> &&
+        !IsObject_V<int(&)()>
+    );
+
+    struct S {};
+    union U { int a; float b; };
+    enum E { A, B, C };
+
+    TEST_EXPECT_TRUE(
+        IsCompound_V<S> &&
+        IsCompound_V<U> &&
+        IsCompound_V<E*> &&
+        IsCompound_V<int*> &&
+        IsCompound_V<int&> &&
+        IsCompound_V<int[]> &&
+        !IsCompound_V<int> &&
+        !IsCompound_V<void> &&
+        !IsCompound_V<const int> &&
+        !IsCompound_V<std::nullptr_t>
+    );
+
+    TEST_EXPECT_TRUE(
+        !IsVolatile_V<int> &&
+        IsVolatile_V<volatile int> &&
+        IsVolatile_V<volatile const int> &&
+        IsVolatile_V<volatile std::valarray<float>> &&
+        !IsVolatile_V<std::valarray<volatile float>>
     );
 }
 // clang-format on
