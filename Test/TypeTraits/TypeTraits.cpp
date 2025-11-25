@@ -406,5 +406,17 @@ TEST_CASE(TypeTraits, TypeTraits) {
         IsVolatile_V<volatile std::valarray<float>> &&
         !IsVolatile_V<std::valarray<volatile float>>
     );
+
+    TEST_EXPECT_TRUE(IsBoundedArray_V<float> == false);
+    TEST_EXPECT_TRUE(IsBoundedArray_V<int> == false);
+    TEST_EXPECT_TRUE(IsBoundedArray_V<int[]> == false);
+    TEST_EXPECT_TRUE(IsBoundedArray_V<int[3]>);
+
+    TEST_EXPECT_TRUE(
+        IsUnboundedArray_V<float> == false &&
+        IsUnboundedArray_V<int> == false &&
+        IsUnboundedArray_V<int[]> == true &&
+        IsUnboundedArray_V<int[3]> == false
+    );
 }
 // clang-format on
