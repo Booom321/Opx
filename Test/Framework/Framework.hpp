@@ -9,6 +9,7 @@
 #include <cstring>
 #include <deque>
 #include <vector>
+#include <string>
 
 #include "Common.hpp"
 #include "TestCase.hpp"
