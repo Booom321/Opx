@@ -1,8 +1,8 @@
 #include "Framework/Framework.hpp"
 
-#include <atomic>
-
 #include <Opx/TypeTraits.hpp>
+
+#include <atomic>
 
 int Func();
 struct O {
@@ -17,6 +17,15 @@ struct PMTraits {};
 template <typename T, typename U>
 struct PMTraits<U T::*> {
     using MemberType = U;
+};
+
+void Func2() noexcept {}
+int Func3(int) { return 1; }
+double Func4(int, float) noexcept { return 0.0; }
+
+struct Fun {
+    long operator()(int) { return 2; }
+    int N() const noexcept { return 3; }
 };
 
 void Foo() {}
@@ -492,5 +501,26 @@ TEST_CASE(TypeTraits, TypeTraits) {
         IsSame_V<EnableIf_T<true>, void>
     );
 
+    TEST_EXPECT_TRUE(
+        IsInvocable_V<decltype(Func2)> &&
+        IsInvocable_V<decltype(Func3), int> &&
+        IsInvocable_V<decltype(Func4), int, float> &&
+        IsInvocable_V<Fun, int> &&
+        !IsInvocable_V<decltype(Func3)> &&
+
+        IsInvocableR_V<int, decltype(Func3), int> &&
+        IsInvocableR_V<double, decltype(Func4), int, float> &&
+        IsInvocableR_V<long, Fun, int> &&
+        IsInvocableR_V<void, decltype(Func3), int> &&
+
+        IsNothrowInvocable_V<decltype(Func4), int, float> &&
+        IsNothrowInvocable_V<decltype(&Fun::N), const Fun&> &&
+        IsNothrowInvocable_V<decltype(Func2)> &&
+        !IsNothrowInvocable_V<decltype(Func3), int> &&
+
+        IsNothrowInvocableR_V<double, decltype(Func4), int, float> &&
+        IsNothrowInvocableR_V<int, decltype(&Fun::N), const Fun&> &&
+        !IsNothrowInvocableR_V<int, decltype(Func3), int>
+    );
 }
 // clang-format on
