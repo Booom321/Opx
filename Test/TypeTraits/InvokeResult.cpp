@@ -14,7 +14,7 @@ struct Fun {
 };
 
 TEST_CASE(TypeTraits, InvokeResult) {
-    static_assert(Opx::IsSame_V<Opx::InvokeResult_T<decltype(h), float>, int> && Opx::IsSame_V<Opx::InvokeResult_T<int (*)(float), float>, int> &&
-                  Opx::IsSame_V<Opx::InvokeResult_T<Fun, int>, long> && Opx::IsSame_V<Opx::InvokeResult_T<decltype(&S::f), S&, int>, int> &&
-                  Opx::IsSame_V<Opx::InvokeResult_T<decltype(&S::g), const S&>, double> && Opx::IsSame_V<Opx::InvokeResult_T<void (*)()>, void>);
+    TEST_EXPECT_TRUE(Opx::IsSame_V<Opx::InvokeResult_T<decltype(h), float>, int> && Opx::IsSame_V<Opx::InvokeResult_T<int (*)(float), float>, int> &&
+                     Opx::IsSame_V<Opx::InvokeResult_T<Fun, int>, long> && Opx::IsSame_V<Opx::InvokeResult_T<decltype(&S::f), S&, int>, int> &&
+                     Opx::IsSame_V<Opx::InvokeResult_T<decltype(&S::g), const S&>, double> && Opx::IsSame_V<Opx::InvokeResult_T<void (*)()>, void>);
 }
