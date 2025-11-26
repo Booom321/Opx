@@ -557,4 +557,147 @@ struct InvokeResult {
 template <typename F, typename... ArgTypes>
 using InvokeResult_T = typename InvokeResult<F, ArgTypes...>::type;
 
+template <typename F, typename... ArgTypes>
+struct IsInvocable : BoolConstant<std::is_invocable_v<F, ArgTypes...>> {};
+template <typename R, typename F, typename... ArgTypes>
+struct IsInvocableR : BoolConstant<std::is_invocable_r_v<R, F, ArgTypes...>> {};
+template <typename F, typename... ArgTypes>
+struct IsNothrowInvocable : BoolConstant<std::is_nothrow_invocable_v<F, ArgTypes...>> {};
+template <typename R, typename F, typename... ArgTypes>
+struct IsNothrowInvocableR : BoolConstant<std::is_nothrow_invocable_r_v<R, F, ArgTypes...>> {};
+
+template <typename F, typename... ArgTypes>
+OPX_CONSTEXPR Bool IsInvocable_V = IsInvocable<F, ArgTypes...>::value;
+template <typename R, typename F, typename... ArgTypes>
+OPX_CONSTEXPR Bool IsInvocableR_V = IsInvocableR<R, F, ArgTypes...>::value;
+template <typename F, typename... ArgTypes>
+OPX_CONSTEXPR Bool IsNothrowInvocable_V = IsNothrowInvocable<F, ArgTypes...>::value;
+template <typename R, typename F, typename... ArgTypes>
+OPX_CONSTEXPR Bool IsNothrowInvocableR_V = IsNothrowInvocableR<R, F, ArgTypes...>::value;
+
+template <typename T>
+struct HasVirtualDestructor : BoolConstant<std::has_virtual_destructor_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool HasVirtualDestructor_V = HasVirtualDestructor<T>::value;
+
+template <typename T, typename... Args>
+struct IsConstructible : BoolConstant<std::is_constructible_v<T, Args...>> {};
+template <typename T, typename... Args>
+OPX_CONSTEXPR Bool IsConstructible_V = IsConstructible<T, Args...>::value;
+
+template <typename T, typename... Args>
+struct IsTriviallyConstructible : BoolConstant<std::is_trivially_constructible_v<T, Args...>> {};
+template <typename T, typename... Args>
+OPX_CONSTEXPR Bool IsTriviallyConstructible_V = IsTriviallyConstructible<T, Args...>::value;
+
+template <typename T, typename... Args>
+struct IsNothrowConstructible : BoolConstant<std::is_nothrow_constructible_v<T, Args...>> {};
+template <typename T, typename... Args>
+OPX_CONSTEXPR Bool IsNothrowConstructible_V = IsNothrowConstructible<T, Args...>::value;
+
+template <typename T>
+struct IsDefaultConstructible : BoolConstant<std::is_default_constructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsDefaultConstructible_V = IsDefaultConstructible<T>::value;
+
+template <typename T>
+struct IsTriviallyDefaultConstructible : BoolConstant<std::is_trivially_default_constructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsTriviallyDefaultConstructible_V = IsTriviallyDefaultConstructible<T>::value;
+
+template <typename T>
+struct IsNothrowDefaultConstructible : BoolConstant<std::is_nothrow_default_constructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsNothrowDefaultConstructible_V = IsNothrowDefaultConstructible<T>::value;
+
+template <typename T>
+struct IsCopyConstructible : BoolConstant<std::is_copy_constructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsCopyConstructible_V = IsCopyConstructible<T>::value;
+
+template <typename T>
+struct IsTriviallyCopyConstructible : BoolConstant<std::is_trivially_copy_constructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsTriviallyCopyConstructible_V = IsTriviallyCopyConstructible<T>::value;
+
+template <typename T>
+struct IsNothrowCopyConstructible : BoolConstant<std::is_nothrow_copy_constructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsNothrowCopyConstructible_V = IsNothrowCopyConstructible<T>::value;
+
+template <typename T>
+struct IsMoveConstructible : BoolConstant<std::is_move_constructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsMoveConstructible_V = IsMoveConstructible<T>::value;
+
+template <typename T>
+struct IsTriviallyMoveConstructible : BoolConstant<std::is_trivially_move_constructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsTriviallyMoveConstructible_V = IsTriviallyMoveConstructible<T>::value;
+
+template <typename T>
+struct IsNothrowMoveConstructible : BoolConstant<std::is_nothrow_move_constructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsNothrowMoveConstructible_V = IsNothrowMoveConstructible<T>::value;
+
+template <typename T, typename U>
+struct IsAssignable : BoolConstant<std::is_assignable_v<T, U>> {};
+template <typename T, typename U>
+OPX_CONSTEXPR Bool IsAssignable_V = IsAssignable<T, U>::value;
+
+template <typename T, typename U>
+struct IsTriviallyAssignable : BoolConstant<std::is_trivially_assignable_v<T, U>> {};
+template <typename T, typename U>
+OPX_CONSTEXPR Bool IsTriviallyAssignable_V = IsTriviallyAssignable<T, U>::value;
+
+template <typename T, typename U>
+struct IsNothrowAssignable : BoolConstant<std::is_nothrow_assignable_v<T, U>> {};
+template <typename T, typename U>
+OPX_CONSTEXPR Bool IsNothrowAssignable_V = IsNothrowAssignable<T, U>::value;
+
+template <typename T>
+struct IsCopyAssignable : BoolConstant<std::is_copy_assignable_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsCopyAssignable_V = IsCopyAssignable<T>::value;
+
+template <typename T>
+struct IsTriviallyCopyAssignable : BoolConstant<std::is_trivially_copy_assignable_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsTriviallyCopyAssignable_V = IsTriviallyCopyAssignable<T>::value;
+
+template <typename T>
+struct IsNothrowCopyAssignable : BoolConstant<std::is_nothrow_copy_assignable_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsNothrowCopyAssignable_V = IsNothrowCopyAssignable<T>::value;
+
+template <typename T>
+struct IsMoveAssignable : BoolConstant<std::is_move_assignable_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsMoveAssignable_V = IsMoveAssignable<T>::value;
+
+template <typename T>
+struct IsTriviallyMoveAssignable : BoolConstant<std::is_trivially_move_assignable_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsTriviallyMoveAssignable_V = IsTriviallyMoveAssignable<T>::value;
+
+template <typename T>
+struct IsNothrowMoveAssignable : BoolConstant<std::is_nothrow_move_assignable_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsNothrowMoveAssignable_V = IsNothrowMoveAssignable<T>::value;
+
+template <typename T>
+struct IsDestructible : BoolConstant<std::is_destructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsDestructible_V = IsDestructible<T>::value;
+
+template <typename T>
+struct IsTriviallyDestructible : BoolConstant<std::is_trivially_destructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsTriviallyDestructible_V = IsTriviallyDestructible<T>::value;
+
+template <typename T>
+struct IsNothrowDestructible : BoolConstant<std::is_nothrow_destructible_v<T>> {};
+template <typename T>
+OPX_CONSTEXPR Bool IsNothrowDestructible_V = IsNothrowDestructible<T>::value;
+
 OPX_NAMESPACE_END
