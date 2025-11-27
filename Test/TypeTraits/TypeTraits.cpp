@@ -3,6 +3,7 @@
 #include <Opx/TypeTraits.hpp>
 
 #include <atomic>
+#include <valarray>
 
 int Func();
 struct O {
@@ -446,10 +447,16 @@ TEST_CASE(TypeTraits, TypeTraits) {
     enum class E2 {};
     enum class E3 : unsigned short {};
     enum class E4 : int {};
+    enum E5 { Value = -1 };
+#if defined(OPX_COMPILER_MSVC)
+    TEST_EXPECT_TRUE(IsSame_V<UnderlyingType_T<E1>, int>);
+#elif defined(OPX_COMPILER_GCC) || defined(OPX_COMPILER_CLANG)
     TEST_EXPECT_TRUE(IsSame_V<UnderlyingType_T<E1>, unsigned int>);
+#endif
     TEST_EXPECT_TRUE(IsSame_V<UnderlyingType_T<E2>, int>);
     TEST_EXPECT_TRUE(IsSame_V<UnderlyingType_T<E3>, unsigned short>);
     TEST_EXPECT_TRUE(IsSame_V<UnderlyingType_T<E4>, int>);
+    TEST_EXPECT_TRUE(IsSame_V<UnderlyingType_T<E5>, int>);
 
     TEST_EXPECT_TRUE(
         IsSame_V<RemoveExtent_T<int>, int> &&
