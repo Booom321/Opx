@@ -5,7 +5,6 @@ file(GLOB_RECURSE TEST_ALL_SOURCE_FILES ${TEST_SOURCE_DIR}/*.cpp)
 add_executable(Test ${TEST_ALL_HEADER_FILES} ${TEST_ALL_SOURCE_FILES})
 
 target_precompile_headers(Test PRIVATE Framework/Framework.hpp)
-
 if (MSVC)
     target_compile_options(Test PRIVATE /Yu"Framework/Framework.hpp")
 endif()
