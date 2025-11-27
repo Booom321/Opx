@@ -6,6 +6,12 @@ add_library(Opx ${OPX_ALL_HEADER_FILES} ${OPX_ALL_SOURCE_FILES})
 
 target_link_libraries(Opx PUBLIC External)
 target_include_directories(Opx PRIVATE ${ROOT_PATH}/External)
+target_include_directories(Opx PRIVATE ${ROOT_PATH}/Source/PCH/)
+
+target_precompile_headers(Opx PRIVATE PCH/OpxPCH.hpp)
+if (MSVC)
+    target_compile_options(Opx PRIVATE /Yu"OpxPCH.hpp")
+endif()
 
 set_target_default_macros(Opx PUBLIC)
 set_target_default_compile_options(Opx PUBLIC)
