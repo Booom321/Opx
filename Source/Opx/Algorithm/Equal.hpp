@@ -6,7 +6,7 @@ OPX_NAMESPACE_BEGIN
 
 namespace Algorithm {
     template <typename LhsIterator, typename RhsIterator>
-    OPX_NODISCARD Bool Equal(LhsIterator lhsStart, LhsIterator lhsEnd, RhsIterator rhsStart) {
+    OPX_NODISCARD OPX_CONSTEXPR Bool Equal(LhsIterator lhsStart, LhsIterator lhsEnd, RhsIterator rhsStart) {
         for (; lhsStart != lhsEnd; ++lhsStart, ++rhsStart) {
             if (!(*lhsStart == *rhsStart)) {
                 return false;
@@ -16,7 +16,7 @@ namespace Algorithm {
     }
 
     template <typename LhsIterator, typename RhsIterator, typename Predicate>
-    OPX_NODISCARD Bool Equal(LhsIterator lhsStart, LhsIterator lhsEnd, RhsIterator rhsStart, Predicate pred) {
+    OPX_NODISCARD OPX_CONSTEXPR Bool Equal(LhsIterator lhsStart, LhsIterator lhsEnd, RhsIterator rhsStart, Predicate pred) {
         for (; lhsStart != lhsEnd; ++lhsStart, ++rhsStart) {
             if (!pred(*lhsStart, *rhsStart)) {
                 return false;
