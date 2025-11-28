@@ -13,7 +13,7 @@ namespace Memory {
     template <typename T, typename SizeType = SizeT>
     void DestructItems(T* pointer, SizeType num) {
         if constexpr (!IsTriviallyDestructible_V<T>) {
-            while (num--) {
+            while (num-- > 0) {
                 pointer->~T();
                 ++pointer;
             }
@@ -25,7 +25,7 @@ namespace Memory {
         if constexpr (IsTriviallyCopyable_V<T>) {
             memset(pointer, 0, sizeof(T) * static_cast<SizeT>(num));
         } else {
-            while (num--) {
+            while (num-- > 0) {
                 new (pointer) T();
                 ++pointer;
             }
@@ -37,7 +37,7 @@ namespace Memory {
         if constexpr (IsTriviallyCopyable_V<T>) {
             memcpy(dest, source, sizeof(T) * static_cast<SizeT>(num));
         } else {
-            while (num--) {
+            while (num-- > 0) {
                 new (dest) T(*source);
                 ++dest, ++source;
             }
@@ -49,7 +49,7 @@ namespace Memory {
         if constexpr (IsTriviallyCopyable_V<T>) {
             memcpy(dest, source, sizeof(T) * static_cast<SizeT>(num));
         } else {
-            while (num--) {
+            while (num-- > 0) {
                 new (dest) T(Move(*source));
                 ++dest, ++source;
             }
@@ -61,7 +61,7 @@ namespace Memory {
         if constexpr (IsTriviallyCopyable_V<T>) {
             memcpy(dest, source, sizeof(T) * static_cast<SizeT>(num));
         } else {
-            while (num--) {
+            while (num-- > 0) {
                 *dest = *source;
                 ++dest, ++source;
             }
@@ -73,7 +73,7 @@ namespace Memory {
         if constexpr (IsTriviallyCopyable_V<T>) {
             memcpy(dest, source, sizeof(T) * static_cast<SizeT>(num));
         } else {
-            while (num--) {
+            while (num-- > 0) {
                 *dest = Move(*source);
                 ++dest, ++source;
             }
@@ -85,7 +85,7 @@ namespace Memory {
         if constexpr (IsTriviallyCopyable_V<T>) {
             memmove(dest - num, source - num, sizeof(T) * static_cast<SizeT>(num));
         } else {
-            while (num--) {
+            while (num-- > 0) {
                 *--dest = Move(*--source);
             }
         }
@@ -96,7 +96,7 @@ namespace Memory {
         if constexpr (IsTriviallyCopyable_V<T>) {
             memmove(dest - num, source - num, sizeof(T) * static_cast<SizeT>(num));
         } else {
-            while (num--) {
+            while (num-- > 0) {
                 *--dest = *--source;
             }
         }
@@ -104,7 +104,7 @@ namespace Memory {
 
     template <typename T, typename SizeType = SizeT>
     void FillConstructItems(T* dest, const T& value, SizeType num) {
-        while (num--) {
+        while (num-- > 0) {
             new (dest) T(value);
             ++dest;
         }
@@ -112,7 +112,7 @@ namespace Memory {
 
     template <typename T, typename SizeType = SizeT>
     void FillAssignItems(T* dest, const T& value, SizeType num) {
-        while (num--) {
+        while (num-- > 0) {
             *dest = value;
             ++dest;
         }
