@@ -1,0 +1,307 @@
+#include "Framework/Framework.hpp"
+
+#include <Opx/Containers/Vector.hpp>
+
+template <typename T>
+Bool ExpectTrue(const Opx::Vector<T>& vec, Opx::Int64 expectedSize, std::initializer_list<T> expectedValues) {
+    if (vec.GetSize() != expectedSize || vec.GetCapacity() < expectedSize) {
+        return false;
+    }
+
+    const T* expectedVec = expectedValues.begin();
+    for (Opx::Int64 i = 0, size = vec.GetSize(); i < size; ++i) {
+        if (!(vec[i] == expectedVec[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+#define TEST_VECTOR(vec, expectedSize, ...) TEST_EXPECT_TRUE(ExpectTrue(vec, expectedSize, {__VA_ARGS__}))
+
+class NonTrivial {
+public:
+    NonTrivial() { value = 0; }
+    NonTrivial(int a, int b) { value = a + b; }
+    NonTrivial(const NonTrivial& other) { value = other.value; }
+    NonTrivial(NonTrivial&& other) noexcept { value = other.value; }
+    ~NonTrivial() { value = 0; }
+
+    NonTrivial& operator=(const NonTrivial& other) {
+        value = other.value;
+        return *this;
+    }
+    NonTrivial& operator=(NonTrivial&& other) noexcept {
+        value = other.value;
+        return *this;
+    }
+
+    int value;
+};
+
+static_assert(!Opx::IsTriviallyConstructible_V<NonTrivial>);
+static_assert(!Opx::IsTriviallyDestructible_V<NonTrivial>);
+static_assert(!Opx::IsTriviallyCopyable_V<NonTrivial>);
+
+TEST_CASE(Containers, Vector) {
+    using IntVector = Opx::Vector<Int32>;
+
+    TEST_COMMENT("Constructor");
+    {
+        IntVector v1{};
+        TEST_EXPECT_TRUE(v1.IsEmpty());
+        TEST_EXPECT_EQ(v1.GetSize(), 0);
+        TEST_EXPECT_EQ(v1.GetCapacity(), 0);
+
+        IntVector v2(3);
+        TEST_VECTOR(v2, 3, 0, 0, 0);
+
+        IntVector v3(3, 2);
+        TEST_VECTOR(v3, 3, 2, 2, 2);
+
+        Int32 arr[7];
+        arr[0] = 0, arr[1] = 1, arr[2] = 2, arr[3] = 3;
+        IntVector v4(3, arr);
+        TEST_VECTOR(v4, 3, 0, 1, 2);
+
+        IntVector v5{1, 2, 3, 4};
+        TEST_VECTOR(v5, 4, 1, 2, 3, 4);
+
+        IntVector v6(v5);
+        TEST_VECTOR(v6, 4, 1, 2, 3, 4);
+
+        IntVector v7(Move(v5));
+        TEST_VECTOR(v6, 4, 1, 2, 3, 4);
+        TEST_EXPECT_EQ(v5.GetCapacity(), 0);
+        TEST_EXPECT_EQ(v5.GetSize(), 0);
+        TEST_EXPECT_EQ(v5.GetData(), nullptr);
+
+        IntVector v8({});
+        TEST_EXPECT_TRUE(v8.IsEmpty());
+        TEST_EXPECT_EQ(v8.GetSize(), 0);
+        TEST_EXPECT_EQ(v8.GetCapacity(), 0);
+    }
+
+    TEST_COMMENT("Element access");
+    {
+        IntVector v{1, 2, 3, 4};
+
+        TEST_ASSERT_NEQ(v.GetData(), nullptr);
+        TEST_EXPECT_EQ(v[0], 1);
+        TEST_EXPECT_EQ(v[1], 2);
+        TEST_EXPECT_EQ(v[2], 3);
+        TEST_EXPECT_EQ(v[3], 4);
+        TEST_EXPECT_EQ(v.At(0), 1);
+        TEST_EXPECT_EQ(v.At(1), 2);
+        TEST_EXPECT_EQ(v.At(2), 3);
+        TEST_EXPECT_EQ(v.At(3), 4);
+        TEST_EXPECT_EQ(v.First(), 1);
+        TEST_EXPECT_EQ(v.Last(), 4);
+
+        v[0] = 0;
+        TEST_VECTOR(v, 4, 0, 2, 3, 4);
+
+        v.At(1) = 1;
+        TEST_VECTOR(v, 4, 0, 1, 3, 4);
+
+        v.First() = 1;
+        TEST_VECTOR(v, 4, 1, 1, 3, 4);
+
+        v.Last() = 3;
+        TEST_VECTOR(v, 4, 1, 1, 3, 3);
+    }
+
+    TEST_COMMENT("Iterator");
+    {
+        IntVector v{1, 2, 3, 4};
+
+        IntVector v1(v);
+        Int64 index = 0;
+        for (int x : v1) {
+            TEST_EXPECT_EQ(x, v[index++]);
+        }
+
+        const IntVector v2(v);
+        index = 0;
+        for (const int x : v2) {
+            TEST_EXPECT_EQ(x, v[index++]);
+        }
+    }
+
+    TEST_COMMENT("Assign");
+    {
+        IntVector v{};
+
+        IntVector v1{1, 2, 3, 4};
+        TEST_EXPECT_EQ(v1[0], 1);
+        TEST_EXPECT_EQ(v1[1], 2);
+        TEST_EXPECT_EQ(v1[2], 3);
+        TEST_EXPECT_EQ(v1[3], 4);
+
+        IntVector v2{};
+
+        IntVector v3{1, 1, 2, 2, 3, 3};
+
+        v = v2;
+        TEST_EXPECT_TRUE(v.IsEmpty());
+
+        v = v1;
+        TEST_VECTOR(v, 4, 1, 2, 3, 4);
+
+        v = Move(v3);
+        TEST_VECTOR(v, 6, 1, 1, 2, 2, 3, 3);
+        TEST_EXPECT_EQ(v3.GetCapacity(), 0);
+        TEST_EXPECT_EQ(v3.GetSize(), 0);
+        TEST_EXPECT_EQ(v3.GetData(), nullptr);
+
+        v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+        TEST_VECTOR(v, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+
+        v = {1, 2};
+        TEST_VECTOR(v, 2, 1, 2);
+
+        v = {};
+        TEST_EXPECT_TRUE(v.IsEmpty());
+    }
+
+    TEST_COMMENT("Clear, Reserve, Resize, Shrink");
+    {
+        IntVector v{1, 2, 3};
+
+        v.Resize(6);
+        TEST_VECTOR(v, 6, 1, 2, 3, 0, 0, 0);
+
+        int x = 1;
+        v.Resize(10, x);
+        TEST_VECTOR(v, 10, 1, 2, 3, 0, 0, 0, 1, 1, 1, 1);
+
+        v.Resize(3);
+        TEST_VECTOR(v, 3, 1, 2, 3);
+
+        v.Reserve(13);
+        TEST_VECTOR(v, 3, 1, 2, 3);
+        TEST_EXPECT_EQ(v.GetCapacity(), 13);
+
+        v.Reserve(2);
+        TEST_VECTOR(v, 3, 1, 2, 3);
+        TEST_EXPECT_EQ(v.GetCapacity(), 13);
+
+        v.Shrink();
+        TEST_VECTOR(v, 3, 1, 2, 3);
+        TEST_EXPECT_EQ(v.GetCapacity(), v.GetSize());
+
+        v.Clear();
+        TEST_EXPECT_TRUE(v.IsEmpty());
+    }
+
+    TEST_COMMENT("== / !=");
+    {
+        IntVector v1{1, 2, 3, 4};
+        IntVector v2{-1, -2, -3, -4};
+        IntVector v3{1, 2, 3, 4};
+
+        TEST_EXPECT_EQ(v1, v3);
+        TEST_EXPECT_NEQ(v1, v2);
+    }
+
+    TEST_COMMENT("Push, PushDefaulted");
+    {
+        IntVector v{};
+        v.Push(1);
+        v.Push(1) += 1;
+        TEST_VECTOR(v, 2, 1, 2);
+
+        v.PushDefaulted(3);
+        TEST_VECTOR(v, 5, 1, 2, 0, 0, 0);
+    }
+
+    TEST_COMMENT("RemoveAt, Pop");
+    {
+        IntVector v{1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+        v.RemoveAt(1, 4);
+        TEST_VECTOR(v, 5, 1, 6, 7, 8, 9);
+
+        int x = v.Pop();
+        TEST_VECTOR(v, 4, 1, 6, 7, 8);
+        TEST_EXPECT_EQ(x, 9);
+    }
+
+    TEST_COMMENT("Append");
+    {
+        IntVector v{};
+
+        IntVector v1{1, 2, 3, 4};
+        IntVector v2{2, 2, 2, 2, 2};
+
+        v.Append(3, 1);
+        TEST_VECTOR(v, 3, 1, 1, 1);
+
+        v.Append({1, 2, 3});
+        TEST_VECTOR(v, 6, 1, 1, 1, 1, 2, 3);
+
+        v.Append(v1);
+        TEST_VECTOR(v, 10, 1, 1, 1, 1, 2, 3, 1, 2, 3, 4);
+
+        v.Append(2, v2.GetData());
+        TEST_VECTOR(v, 12, 1, 1, 1, 1, 2, 3, 1, 2, 3, 4, 2, 2);
+    }
+
+    TEST_COMMENT("+=");
+    {
+        IntVector v{};
+
+        IntVector v1{1, 2, 3, 4};
+
+        v += {1, 2, 3};
+        TEST_VECTOR(v, 3, 1, 2, 3);
+        v += {};
+        TEST_VECTOR(v, 3, 1, 2, 3);
+        v += v1;
+        TEST_VECTOR(v, 7, 1, 2, 3, 1, 2, 3, 4);
+    }
+
+    TEST_COMMENT("EmplaceAt, InsertDefaulted");
+    {
+        IntVector v{1, 2, 3};
+
+        v.EmplaceAt(1, 1);
+        TEST_VECTOR(v, 4, 1, 1, 2, 3);
+
+        v.EmplaceAt(4, 4);
+        TEST_VECTOR(v, 5, 1, 1, 2, 3, 4);
+
+        v.Clear();
+
+        v = {1, 2};
+        v.InsertDefaulted(0);
+        TEST_VECTOR(v, 3, 0, 1, 2);
+
+        v.InsertDefaulted(2) = 5;
+        TEST_VECTOR(v, 4, 0, 1, 5, 2);
+    }
+
+    TEST_COMMENT("Insert");
+    {
+        IntVector v{1, 2, 3};
+
+        IntVector v1{1, 2, 3, 4};
+
+        v.Insert(1, {2, 2, 2});
+        TEST_VECTOR(v, 6, 1, 2, 2, 2, 2, 3);
+        v.Insert(4, v1);
+        TEST_VECTOR(v, 10, 1, 2, 2, 2, 1, 2, 3, 4, 2, 3);
+
+        v = {1, 2};
+
+        v.Insert(1, 3, 1);
+        TEST_VECTOR(v, 5, 1, 1, 1, 1, 2);
+
+        v.Insert(3, 2, 2);
+        TEST_VECTOR(v, 7, 1, 1, 1, 2, 2, 1, 2);
+    }
+}
+
+TEST_CASE(Containers, VectorWithNonTrivial) {
+    // using NTVector = Opx::Vector<NonTrivial>;
+}
