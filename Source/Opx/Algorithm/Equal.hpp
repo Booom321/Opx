@@ -16,7 +16,7 @@ namespace Algorithm {
     }
 
     template <typename LhsIterator, typename RhsIterator, typename Predicate>
-    OPX_NODISCARD OPX_CONSTEXPR Bool Equal(LhsIterator lhsStart, LhsIterator lhsEnd, RhsIterator rhsStart, Predicate pred) {
+    OPX_NODISCARD Bool Equal(LhsIterator lhsStart, LhsIterator lhsEnd, RhsIterator rhsStart, Predicate pred) {
         for (; lhsStart != lhsEnd; ++lhsStart, ++rhsStart) {
             if (!pred(*lhsStart, *rhsStart)) {
                 return false;
