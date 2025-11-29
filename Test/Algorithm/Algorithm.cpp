@@ -1,5 +1,8 @@
 #include "Framework/Framework.hpp"
 
+#include <Opx/Algorithm/AllOf.hpp>
+#include <Opx/Algorithm/AnyOf.hpp>
+#include <Opx/Algorithm/NoneOf.hpp>
 #include <Opx/Algorithm/Contains.hpp>
 #include <Opx/Algorithm/Equal.hpp>
 #include <Opx/Algorithm/Find.hpp>
@@ -102,5 +105,24 @@ TEST_CASE(Algorithm, Algorithm) {
         Algorithm::ReplaceIf(a.begin(), a.begin() + 4, [](int x) { return x == 5; }, 0);
         expected = {0, 0, 3, 0, 5, 4, 5};
         TEST_EXPECT_EQ(a, expected);
+    }
+
+    TEST_COMMENT("AllOf, AnyOf, NoneOf");
+    {
+        auto IsOdd = [](int x) -> Bool { return x % 2 == 1; };
+        auto IsEven = [](int x) -> Bool { return x % 2 == 0; };
+
+        Vector<int> a{2, 4, 6, 8, 2, 4};
+        Vector<int> b{2, 4, 6, 3, 2, 4};
+
+        TEST_EXPECT_FALSE(Algorithm::AllOf(a.begin(), a.end(), IsOdd));
+        TEST_EXPECT_TRUE(Algorithm::AllOf(a.begin(), a.end(), IsEven));
+
+        TEST_EXPECT_TRUE(Algorithm::AnyOf(b.begin(), b.end(), IsOdd));
+        TEST_EXPECT_TRUE(Algorithm::AnyOf(b.begin(), b.end(), IsEven));
+        TEST_EXPECT_FALSE(Algorithm::AnyOf(b.begin(), b.end(), [](int x) { return x == 9999; }));
+
+        TEST_EXPECT_TRUE(Algorithm::NoneOf(a.begin(), a.end(), IsOdd));
+        TEST_EXPECT_FALSE(Algorithm::NoneOf(a.begin(), a.end(), IsEven));
     }
 }
