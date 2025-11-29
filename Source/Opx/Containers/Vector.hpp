@@ -5,6 +5,7 @@
 #include "../Assert.hpp"
 #include "../Memory/Memory.hpp"
 #include "../Algorithm/Equal.hpp"
+#include "../Algorithm/ForEach.hpp"
 #include "../Utility/NumericLimits.hpp"
 
 OPX_NAMESPACE_BEGIN
@@ -340,8 +341,73 @@ public:
                                             Memory::CopyConstructItems<ElementType, SizeType>, Memory::CopyAssignItems<ElementType, SizeType>);
     }
 
+    template <typename Predicate>
+    void Filter(Vector& output, Predicate pred) {
+        for (SizeType i = 0; i < mSize; ++i) {
+            if (pred(mData[i])) {
+                output.Push(mData[i]);
+            }
+        }
+    }
+
+    template <typename ModifierFunc>
+    OPX_NODISCARD OPX_INLINE Vector Map(ModifierFunc fn) {
+        Vector output(*this);
+        Algorithm::ForEach(output.mData, output.mData + output.mSize, fn);
+        return output;
+    }
+
+    template <typename ModifierFunc>
+    OPX_INLINE void ForEach(ModifierFunc fn) {
+        Algorithm::ForEach(mData, mData + mSize, fn);
+    }
+
+    OPX_INLINE Vector Slice(SizeType start, SizeType num = -1) {
+        OPX_ASSERT(start >= 0 && start < mSize);
+        return Vector((num < 0 || num >= mSize - start) ? mSize - start : num, mData + start);
+    }
+
+    void Reverse() {
+        for (SizeType i = 0, j = mSize - 1, count = static_cast<SizeType>(static_cast<Float>(mSize) * .5f); i < count; ++i, --j) {
+            ElementType Temp = mData[i];
+            mData[i] = mData[j];
+            mData[j] = Temp;
+        }
+    }
+
+private:
+    explicit Vector(SizeType capacity, Bool) { Init<EInitMethod::None>(0, capacity, nullptr); }
+
+    template <typename LhsVector, typename RhsVector>
+    static Vector ConcatenateVectorsImpl(LhsVector lhs, RhsVector rhs) {
+        OPX_ASSERT(lhs.mSize <= kMaxCapacity && rhs.mSize <= kMaxCapacity - lhs.mSize);
+        Vector output(lhs.mSize + rhs.mSize, true);
+        Internal::MoveOrCopyConstructItems<ElementType, SizeType, IsRvalueReference_V<LhsVector>>(output.mData, lhs.mData, lhs.mSize);
+        Internal::MoveOrCopyConstructItems<ElementType, SizeType, IsRvalueReference_V<RhsVector>>(output.mData + lhs.mSize, rhs.mData, rhs.mSize);
+        output.mSize = lhs.mSize + rhs.mSize;
+        return output;
+    }
+
+public:
+    OPX_NODISCARD OPX_INLINE friend Vector operator+(const Vector& lhs, const Vector& rhs) {
+        return ConcatenateVectorsImpl<const Vector&, const Vector&>(lhs, rhs);
+    }
+
+    OPX_NODISCARD OPX_INLINE friend Vector operator+(Vector&& lhs, Vector&& rhs) {
+        return ConcatenateVectorsImpl<Vector&&, Vector&&>(Move(lhs), Move(rhs));
+    }
+
+    OPX_NODISCARD OPX_INLINE friend Vector operator+(Vector&& lhs, const Vector& rhs) {
+        return ConcatenateVectorsImpl<Vector&&, const Vector&>(Move(lhs), rhs);
+    }
+
+    OPX_NODISCARD OPX_INLINE friend Vector operator+(const Vector& lhs, Vector&& rhs) {
+        return ConcatenateVectorsImpl<const Vector&, Vector&&>(lhs, Move(rhs));
+    }
+
 private:
     enum class EInitMethod : UInt8 {
+        None,
         FillConstruct,
         CopyConstruct,
         DefaultConstruct,
@@ -362,7 +428,8 @@ private:
             }
         } else if constexpr (METHOD == EInitMethod::DefaultConstruct) {
             Memory::DefaultConstructItems<ElementType, SizeType>(data, mSize);
-        }
+        } else {
+        }  // EInitMethod::None
 
         mData = data;
     }

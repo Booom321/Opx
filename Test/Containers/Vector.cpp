@@ -300,6 +300,91 @@ TEST_CASE(Containers, Vector) {
         v.Insert(3, 2, 2);
         TEST_VECTOR(v, 7, 1, 1, 1, 2, 2, 1, 2);
     }
+
+    TEST_COMMENT("Filter");
+    {
+        IntVector v{1, 2, 2, 3, 4, 6, 8, 7};
+        IntVector res{};
+        v.Filter(res, [](int x) { return x % 2 == 0; });
+        TEST_VECTOR(res, 5, 2, 2, 4, 6, 8);
+    }
+
+    TEST_COMMENT("Map, ForEach");
+    {
+        IntVector v{1, 2, 2, 3, 4, 6, 8, 7};
+
+        IntVector mapResult{v.Map([](int& x) { x = 1; })};
+        IntVector forEachResult{v};
+        forEachResult.ForEach([](int& x) { x += 1; });
+
+        TEST_VECTOR(mapResult, 8, 1, 1, 1, 1, 1, 1, 1, 1);
+        TEST_VECTOR(forEachResult, 8, 2, 3, 3, 4, 5, 7, 9, 8);
+    }
+
+    TEST_COMMENT("Slice");
+    {
+        /*
+            start = 3
+            num  = 7
+            mszie = 8
+            num < size - start
+            7 < 5
+        */
+        IntVector v{1, 2, 2, 3, 4, 6, 8, 7};
+
+        IntVector v1{v.Slice(3)};
+        IntVector v2{v.Slice(3, 3)};
+        IntVector v3{v.Slice(3, -3)};
+        IntVector v4{v.Slice(3, 5)};
+        IntVector v5{v.Slice(3, 6)};
+
+        TEST_VECTOR(v1, 5, 3, 4, 6, 8, 7);
+        TEST_VECTOR(v2, 3, 3, 4, 6);
+        TEST_VECTOR(v3, 5, 3, 4, 6, 8, 7);
+        TEST_VECTOR(v4, 5, 3, 4, 6, 8, 7);
+        TEST_VECTOR(v5, 5, 3, 4, 6, 8, 7);
+    }
+
+    TEST_COMMENT("Reverse");
+    {
+        IntVector v1{1, 2, 2, 3, 4, 6, 8, 7};
+        IntVector v2{};
+        IntVector v3{1, 2};
+        IntVector v4({1});
+        IntVector v5({1, 2, 3});
+
+        v1.Reverse();
+        v2.Reverse();
+        v3.Reverse();
+        v4.Reverse();
+        v5.Reverse();
+
+        TEST_VECTOR(v1, 8, 7, 8, 6, 4, 3, 2, 2, 1);
+        TEST_EXPECT_TRUE(v2.IsEmpty());
+        TEST_VECTOR(v3, 2, 2, 1);
+        TEST_VECTOR(v4, 1, 1);
+        TEST_VECTOR(v5, 3, 3, 2, 1);
+    }
+
+    TEST_COMMENT("operator+");
+    {
+        IntVector a{1, 2, 3};
+        IntVector b{1, 2};
+        IntVector c{};
+
+        IntVector v1 = a + b;
+        IntVector v2 = a + c;
+        IntVector v3 = b + c + a;
+        IntVector v4 = a + IntVector{1, 1, 1};
+        IntVector v5 = IntVector{2, 3, 4} + b;
+        IntVector v6 = IntVector{2, 3, 4} + IntVector{1, 2};
+
+        TEST_VECTOR(v1, 5, 1, 2, 3, 1, 2);
+        TEST_VECTOR(v2, 3, 1, 2, 3);
+        TEST_VECTOR(v3, 5, 1, 2, 1, 2, 3);
+        TEST_VECTOR(v4, 6, 1, 2, 3, 1, 1, 1);
+        TEST_VECTOR(v6, 5, 2, 3, 4, 1, 2);
+    }
 }
 
 TEST_CASE(Containers, VectorWithNonTrivial) {
