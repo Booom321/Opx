@@ -7,8 +7,8 @@
 OPX_NAMESPACE_BEGIN
 
 namespace Memory {
-    void* Allocate(SizeT size);
-    void Free(void* pointer);
+    OPX_API void* Allocate(SizeT size);
+    OPX_API void Free(void* pointer);
 
     template <typename T, typename SizeType = SizeT>
     void DestructItems(T* pointer, SizeType num) {
