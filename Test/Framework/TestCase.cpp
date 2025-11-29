@@ -1,6 +1,7 @@
 #include "Framework/Framework.hpp"
 
-FailedTestInfo::FailedTestInfo(const Char* file, Int32 line, ETestFailureType failureType) : mFile(file), mLine(line), mFailureType(failureType) {}
+FailedTestInfo::FailedTestInfo(const Char* file, Int32 line, ETestFailureType failureType)
+    : mFile(file), mLine(line), mFailureType(failureType) {}
 
 void TestCaseResult::Reset() {
     mInfos.clear();

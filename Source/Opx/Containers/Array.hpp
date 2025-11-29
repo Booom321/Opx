@@ -113,8 +113,9 @@ OPX_CONSTEXPR Bool operator!=(const Array<T, NUM>& lhs, const Array<T, NUM>& rhs
 
 namespace Internal {
     template <typename T, Bool LHS_USE_MOVE, Bool RHS_USE_MOVE, Int64 LHS_NUM, Int64 RHS_NUM>
-    OPX_CONSTEXPR Array<T, LHS_NUM + RHS_NUM> ConcatenateArraysImpl(TypeChooser_T<LHS_USE_MOVE, T*, const T*> lhsData,
-                                                                    TypeChooser_T<RHS_USE_MOVE, T*, const T*> rhsData) {
+    OPX_CONSTEXPR Array<T, LHS_NUM + RHS_NUM> ConcatenateArraysImpl(
+        TypeChooser_T<LHS_USE_MOVE, T*, const T*> lhsData,
+        TypeChooser_T<RHS_USE_MOVE, T*, const T*> rhsData) {
         static_assert(LHS_NUM <= NumericLimits<Int64>::kMax);
         static_assert(RHS_NUM <= NumericLimits<Int64>::kMax);
         static_assert(LHS_NUM <= NumericLimits<Int64>::kMax - RHS_NUM);
@@ -147,23 +148,31 @@ namespace Internal {
 }  // namespace Internal
 
 template <typename T, Int64 LHS_NUM, Int64 RHS_NUM>
-OPX_CONSTEXPR Array<T, LHS_NUM + RHS_NUM> operator+(const Array<T, LHS_NUM>& lhs, const Array<T, RHS_NUM>& rhs) {
-    return Internal::ConcatenateArraysImpl<T, false, false, LHS_NUM, RHS_NUM>(&lhs.mData[0], &rhs.mData[0]);
+OPX_CONSTEXPR Array<T, LHS_NUM + RHS_NUM> operator+(const Array<T, LHS_NUM>& lhs,
+                                                    const Array<T, RHS_NUM>& rhs) {
+    return Internal::ConcatenateArraysImpl<T, false, false, LHS_NUM, RHS_NUM>(&lhs.mData[0],
+                                                                              &rhs.mData[0]);
 }
 
 template <typename T, Int64 LHS_NUM, Int64 RHS_NUM>
-OPX_CONSTEXPR Array<T, LHS_NUM + RHS_NUM> operator+(Array<T, LHS_NUM>&& lhs, Array<T, RHS_NUM>&& rhs) {
-    return Internal::ConcatenateArraysImpl<T, true, true, LHS_NUM, RHS_NUM>(&lhs.mData[0], &rhs.mData[0]);
+OPX_CONSTEXPR Array<T, LHS_NUM + RHS_NUM> operator+(Array<T, LHS_NUM>&& lhs,
+                                                    Array<T, RHS_NUM>&& rhs) {
+    return Internal::ConcatenateArraysImpl<T, true, true, LHS_NUM, RHS_NUM>(&lhs.mData[0],
+                                                                            &rhs.mData[0]);
 }
 
 template <typename T, Int64 LHS_NUM, Int64 RHS_NUM>
-OPX_CONSTEXPR Array<T, LHS_NUM + RHS_NUM> operator+(const Array<T, LHS_NUM>& lhs, Array<T, RHS_NUM>&& rhs) {
-    return Internal::ConcatenateArraysImpl<T, false, true, LHS_NUM, RHS_NUM>(&lhs.mData[0], &rhs.mData[0]);
+OPX_CONSTEXPR Array<T, LHS_NUM + RHS_NUM> operator+(const Array<T, LHS_NUM>& lhs,
+                                                    Array<T, RHS_NUM>&& rhs) {
+    return Internal::ConcatenateArraysImpl<T, false, true, LHS_NUM, RHS_NUM>(&lhs.mData[0],
+                                                                             &rhs.mData[0]);
 }
 
 template <typename T, Int64 LHS_NUM, Int64 RHS_NUM>
-OPX_CONSTEXPR Array<T, LHS_NUM + RHS_NUM> operator+(Array<T, LHS_NUM>&& lhs, const Array<T, RHS_NUM>& rhs) {
-    return Internal::ConcatenateArraysImpl<T, true, false, LHS_NUM, RHS_NUM>(&lhs.mData[0], &rhs.mData[0]);
+OPX_CONSTEXPR Array<T, LHS_NUM + RHS_NUM> operator+(Array<T, LHS_NUM>&& lhs,
+                                                    const Array<T, RHS_NUM>& rhs) {
+    return Internal::ConcatenateArraysImpl<T, true, false, LHS_NUM, RHS_NUM>(&lhs.mData[0],
+                                                                             &rhs.mData[0]);
 }
 
 OPX_NAMESPACE_END

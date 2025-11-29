@@ -81,7 +81,8 @@
 #define OPX_COMPILER_MSVC_VERSION _MSC_VER
 #elif defined(__clang__)
 #define OPX_COMPILER_CLANG 1
-#define OPX_COMPILER_CLANG_VERSION (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__)
+#define OPX_COMPILER_CLANG_VERSION \
+    (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__)
 #elif defined(__GNUC__)
 #define OPX_COMPILER_GCC 1
 #if defined(__GNUC_PATCHLEVEL__)

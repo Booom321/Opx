@@ -1,11 +1,13 @@
 #include "Framework/Framework.hpp"
 
-Bool CreateTestCase(const Char* testSuiteName, const Char* testCaseName, TestCase::TestFunction func) {
+Bool CreateTestCase(const Char* testSuiteName, const Char* testCaseName,
+                    TestCase::TestFunction func) {
     TestExecutor::Get()->GetTestSuiteByName(testSuiteName).AddTestCase(testCaseName, func);
     return true;
 }
 
-void ExpectImpl(TestCaseResult& result, Bool isTrue, const Char* file, Int32 line, ETestFailureType failureType) {
+void ExpectImpl(TestCaseResult& result, Bool isTrue, const Char* file, Int32 line,
+                ETestFailureType failureType) {
     if (isTrue) {
         return;
     }
@@ -46,7 +48,9 @@ public:
         return bits;
     }
 
-    static inline UInt SignMagnitude(UInt bits) { return (kSignBitMask & bits) ? (~bits + 1) : (kSignBitMask | bits); }
+    static inline UInt SignMagnitude(UInt bits) {
+        return (kSignBitMask & bits) ? (~bits + 1) : (kSignBitMask | bits);
+    }
 
     static UInt UlpDistance(UInt lhsBits, UInt rhsBits) {
         const UInt lhsMag = SignMagnitude(lhsBits);
@@ -72,6 +76,10 @@ private:
     UInt mMaxUlps;
 };
 
-Bool CompareFloat(Float lhs, Float rhs, UInt32 maxUlps) { return FloatComparator<Float>{lhs, rhs, maxUlps}(); }
+Bool CompareFloat(Float lhs, Float rhs, UInt32 maxUlps) {
+    return FloatComparator<Float>{lhs, rhs, maxUlps}();
+}
 
-Bool CompareDouble(Double lhs, Double rhs, UInt64 maxUlps) { return FloatComparator<Double>{lhs, rhs, maxUlps}(); }
+Bool CompareDouble(Double lhs, Double rhs, UInt64 maxUlps) {
+    return FloatComparator<Double>{lhs, rhs, maxUlps}();
+}

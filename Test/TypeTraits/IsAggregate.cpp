@@ -25,6 +25,8 @@ union U {
 class E {};
 
 TEST_CASE(TypeTraits, IsAggregate) {
-    TEST_EXPECT_TRUE(Opx::IsAggregate_V<A> && Opx::IsAggregate_V<D> && Opx::IsAggregate_V<U> && Opx::IsAggregate_V<E> && !Opx::IsAggregate_V<B> &&
-                     !Opx::IsAggregate_V<C> && !Opx::IsAggregate_V<int> && !Opx::IsAggregate_V<int*> && !Opx::IsAggregate_V<void>);
+    TEST_EXPECT_TRUE(Opx::IsAggregate_V<A> && Opx::IsAggregate_V<D> && Opx::IsAggregate_V<U> &&
+                     Opx::IsAggregate_V<E> && !Opx::IsAggregate_V<B> && !Opx::IsAggregate_V<C> &&
+                     !Opx::IsAggregate_V<int> && !Opx::IsAggregate_V<int*> &&
+                     !Opx::IsAggregate_V<void>);
 }

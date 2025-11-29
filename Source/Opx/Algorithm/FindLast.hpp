@@ -6,7 +6,9 @@ OPX_NAMESPACE_BEGIN
 
 namespace Algorithm {
     template <typename BidirectionalIterator, typename T>
-    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLast(BidirectionalIterator first, BidirectionalIterator last, const T& value) {
+    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLast(BidirectionalIterator first,
+                                                               BidirectionalIterator last,
+                                                               const T& value) {
         BidirectionalIterator lastTmp(last);
         while (lastTmp != first) {
             if (*--lastTmp == value) {
@@ -17,7 +19,9 @@ namespace Algorithm {
     }
 
     template <typename BidirectionalIterator, typename Predicate>
-    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLastIf(BidirectionalIterator first, BidirectionalIterator last, Predicate pred) {
+    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLastIf(BidirectionalIterator first,
+                                                                 BidirectionalIterator last,
+                                                                 Predicate pred) {
         BidirectionalIterator lastTmp(last);
         while (lastTmp != first) {
             if (pred(*--lastTmp)) {
@@ -28,7 +32,9 @@ namespace Algorithm {
     }
 
     template <typename BidirectionalIterator, typename Predicate>
-    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLastIfNot(BidirectionalIterator first, BidirectionalIterator last, Predicate pred) {
+    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLastIfNot(BidirectionalIterator first,
+                                                                    BidirectionalIterator last,
+                                                                    Predicate pred) {
         BidirectionalIterator lastTmp(last);
         while (lastTmp != first) {
             if (!pred(*--lastTmp)) {

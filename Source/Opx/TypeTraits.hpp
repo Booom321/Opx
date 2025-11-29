@@ -229,12 +229,13 @@ template <typename T>
 OPX_CONSTEXPR Bool IsNullPtr_V = IsNullPtr<T>::value;
 
 template <typename T>
-struct IsIntegral : IsAnyOf<RemoveCV_T<T>, bool, char, wchar_t,
+struct IsIntegral
+    : IsAnyOf<RemoveCV_T<T>, bool, char, wchar_t,
 #if defined(__cpp_char8_t)
-                            char8_t,
+              char8_t,
 #endif
-                            char16_t, char32_t, unsigned char, unsigned short, unsigned int, unsigned long, unsigned long long, signed char, short,
-                            int, long, long long> {
+              char16_t, char32_t, unsigned char, unsigned short, unsigned int, unsigned long,
+              unsigned long long, signed char, short, int, long, long long> {
 };
 template <typename T>
 OPX_CONSTEXPR Bool IsIntegral_V = IsIntegral<T>::value;
@@ -313,12 +314,14 @@ template <typename T>
 OPX_CONSTEXPR Bool IsRvalueReference_V = IsRvalueReference<T>::value;
 
 template <typename T>
-struct IsMemberFunctionPointer : Details::IsMemberFunctionPtrImpl<typename std::remove_cv<T>::type> {};
+struct IsMemberFunctionPointer
+    : Details::IsMemberFunctionPtrImpl<typename std::remove_cv<T>::type> {};
 template <typename T>
 OPX_CONSTEXPR Bool IsMemberFunctionPointer_V = IsMemberFunctionPointer<T>::value;
 
 template <typename T>
-struct IsMemberObjectPointer : BoolConstant<IsMemberPointer_V<T> && !IsMemberFunctionPointer_V<T>> {};
+struct IsMemberObjectPointer : BoolConstant<IsMemberPointer_V<T> && !IsMemberFunctionPointer_V<T>> {
+};
 template <typename T>
 OPX_CONSTEXPR Bool IsMemberObjectPointer_V = IsMemberObjectPointer<T>::value;
 
@@ -328,7 +331,8 @@ template <typename T>
 OPX_CONSTEXPR Bool IsArithmetic_V = IsArithmetic<T>::value;
 
 template <typename T>
-struct IsScalar : BoolConstant<IsArithmetic_V<T> || IsEnum_V<T> || IsPointer_V<T> || IsMemberPointer_V<T> || IsNullPtr_V<T>> {};
+struct IsScalar : BoolConstant<IsArithmetic_V<T> || IsEnum_V<T> || IsPointer_V<T> ||
+                               IsMemberPointer_V<T> || IsNullPtr_V<T>> {};
 template <typename T>
 OPX_CONSTEXPR Bool IsScalar_V = IsScalar<T>::value;
 
@@ -371,7 +375,8 @@ OPX_CONSTEXPR Bool IsEmpty_V = IsEmpty<T>::value;
 
 namespace Details {
     template <typename T>
-    TrueType TestIsPolymorphic(decltype(dynamic_cast<const volatile void*>(static_cast<T*>(nullptr))));
+    TrueType TestIsPolymorphic(
+        decltype(dynamic_cast<const volatile void*>(static_cast<T*>(nullptr))));
     template <typename T>
     FalseType TestIsPolymorphic(...);
 
@@ -441,7 +446,10 @@ template <typename T>
 OPX_CONSTEXPR Bool IsUnboundedArray_V = IsUnboundedArray<T>::value;
 
 template <typename Base, typename Derived>
-struct IsBaseOf : BoolConstant<IsClass_V<Base> && IsClass_V<Derived>&& decltype(Details::TestIsBaseOf<Base, Derived>(0))::value> {};
+struct IsBaseOf
+    : BoolConstant<IsClass_V<Base> &&
+                   IsClass_V<Derived>&& decltype(Details::TestIsBaseOf<Base, Derived>(0))::value> {
+};
 template <typename Base, typename Derived>
 OPX_CONSTEXPR Bool IsBaseOf_V = IsBaseOf<Base, Derived>::value;
 
@@ -529,7 +537,8 @@ private:
     using U = RemoveReference_T<T>;
 
 public:
-    using type = TypeChooser_T<IsArray_V<U>, AddPointer_T<RemoveExtent_T<U>>, TypeChooser_T<IsFunction_V<U>, AddPointer_T<U>, RemoveCV_T<U>>>;
+    using type = TypeChooser_T<IsArray_V<U>, AddPointer_T<RemoveExtent_T<U>>,
+                               TypeChooser_T<IsFunction_V<U>, AddPointer_T<U>, RemoveCV_T<U>>>;
 };
 template <typename T>
 using Decay_T = typename Decay<T>::type;
@@ -601,7 +610,8 @@ template <typename T>
 OPX_CONSTEXPR Bool IsDefaultConstructible_V = IsDefaultConstructible<T>::value;
 
 template <typename T>
-struct IsTriviallyDefaultConstructible : BoolConstant<std::is_trivially_default_constructible_v<T>> {};
+struct IsTriviallyDefaultConstructible
+    : BoolConstant<std::is_trivially_default_constructible_v<T>> {};
 template <typename T>
 OPX_CONSTEXPR Bool IsTriviallyDefaultConstructible_V = IsTriviallyDefaultConstructible<T>::value;
 

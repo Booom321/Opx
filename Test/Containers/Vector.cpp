@@ -3,7 +3,8 @@
 #include <Opx/Containers/Vector.hpp>
 
 template <typename T>
-Bool ExpectTrue(const Opx::Vector<T>& vec, Opx::Int64 expectedSize, std::initializer_list<T> expectedValues) {
+Bool ExpectTrue(const Opx::Vector<T>& vec, Opx::Int64 expectedSize,
+                std::initializer_list<T> expectedValues) {
     if (vec.GetSize() != expectedSize || vec.GetCapacity() < expectedSize) {
         return false;
     }
@@ -17,7 +18,8 @@ Bool ExpectTrue(const Opx::Vector<T>& vec, Opx::Int64 expectedSize, std::initial
     return true;
 }
 
-#define TEST_VECTOR(vec, expectedSize, ...) TEST_EXPECT_TRUE(ExpectTrue(vec, expectedSize, {__VA_ARGS__}))
+#define TEST_VECTOR(vec, expectedSize, ...) \
+    TEST_EXPECT_TRUE(ExpectTrue(vec, expectedSize, {__VA_ARGS__}))
 
 class NonTrivial {
 public:

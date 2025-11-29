@@ -2,8 +2,10 @@
 
 OPX_NAMESPACE_BEGIN
 
-void DefaultAssertHandler(const Char* expr, const Char* file, const Char* function, Int32 line, const Char* message) {
-    printf("Assertion failed: %s\n    >> Location: %s (%s:%d)\n", expr, *function ? function : "<function>", file, line);
+void DefaultAssertHandler(const Char* expr, const Char* file, const Char* function, Int32 line,
+                          const Char* message) {
+    printf("Assertion failed: %s\n    >> Location: %s (%s:%d)\n", expr,
+           *function ? function : "<function>", file, line);
     if (message) {
         printf("    >> Message: %s\n", message);
     }
@@ -13,7 +15,8 @@ static AssertHandler globalHandler = DefaultAssertHandler;
 
 void SetAssertHandler(AssertHandler handler) { globalHandler = handler; }
 
-void ReportAssertionFailure(const Char* expr, const Char* file, const Char* function, Int32 line, const Char* message, ...) {
+void ReportAssertionFailure(const Char* expr, const Char* file, const Char* function, Int32 line,
+                            const Char* message, ...) {
     if (message) {
         Char buffer[1024];
 

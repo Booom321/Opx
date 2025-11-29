@@ -7,17 +7,20 @@
 Bool SupportsColor() noexcept {
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
     return true;
-#elif defined(__unix__) || defined(__unix) || defined(__linux__) || defined(__APPLE__) || defined(__MACH__)
+#elif defined(__unix__) || defined(__unix) || defined(__linux__) || defined(__APPLE__) || \
+    defined(__MACH__)
     const Char* EnvTERM = std::getenv("TERM");
     const Char* EnvCOLORTERM = std::getenv("COLORTERM");
     if (EnvTERM || EnvCOLORTERM) {
         return true;
     }
 
-    static constexpr std::array<const char*, 16> kTerms = {{"ansi", "color", "console", "cygwin", "gnome", "konsole", "kterm", "linux", "msys",
-                                                            "putty", "rxvt", "screen", "vt100", "xterm", "alacritty", "vt102"}};
+    static constexpr std::array<const char*, 16> kTerms = {
+        {"ansi", "color", "console", "cygwin", "gnome", "konsole", "kterm", "linux", "msys",
+         "putty", "rxvt", "screen", "vt100", "xterm", "alacritty", "vt102"}};
 
-    return std::any_of(kTerms.begin(), kTerms.end(), [&](const Char* term) { return std::strstr(EnvTERM, term) != nullptr; });
+    return std::any_of(kTerms.begin(), kTerms.end(),
+                       [&](const Char* term) { return std::strstr(EnvTERM, term) != nullptr; });
 #endif
 }
 
@@ -52,7 +55,8 @@ private:
     std::chrono::time_point<ClockType> start;
 };
 
-TestExecutor::TestExecutor() : mTotalTestTime(0.0), mNumPassedTestCases(0), mNumFailedTestCases(0) {}
+TestExecutor::TestExecutor()
+    : mTotalTestTime(0.0), mNumPassedTestCases(0), mNumFailedTestCases(0) {}
 
 TestExecutor* TestExecutor::Get() {
     static TestExecutor executorInstance{};
@@ -71,7 +75,9 @@ TestSuite& TestExecutor::GetTestSuiteByName(const Char* suiteName) {
 
 void TestExecutor::Execute() {
     if (!mTestSuites.empty()) {
-        printf("----------------------------------------------------------------------------------------------\n");
+        printf(
+            "--------------------------------------------------------------------------------------"
+            "--------\n");
     }
 
     while (!mTestSuites.empty()) {
@@ -80,22 +86,29 @@ void TestExecutor::Execute() {
     }
 
     const Int32 totalTestCases = mNumPassedTestCases + mNumFailedTestCases;
-    printf("----------------------------------------------------------------------------------------------\n");
+    printf(
+        "------------------------------------------------------------------------------------------"
+        "----\n");
     printf("Result: %s%d%% tests passed%s\n", kGreenBold,
-           totalTestCases == 0 ? 100 : static_cast<Int32>(static_cast<Float>(mNumPassedTestCases) / static_cast<Float>(totalTestCases) * 100.f),
+           totalTestCases == 0 ? 100
+                               : static_cast<Int32>(static_cast<Float>(mNumPassedTestCases) /
+                                                    static_cast<Float>(totalTestCases) * 100.f),
            kReset);
     printf("        %s%d passed%s\n", kGreenBold, mNumPassedTestCases, kReset);
     printf("        %s%d failed%s\n", kRedBold, mNumFailedTestCases, kReset);
     printf("Time  : %.3lf ms\n", mTotalTestTime);
-    printf("----------------------------------------------------------------------------------------------\n");
+    printf(
+        "------------------------------------------------------------------------------------------"
+        "----\n");
 }
 
 void TestExecutor::RunTestSuite(TestSuite& suite) {
     std::deque<TestCase>& testCases = suite.GetTestCases();
     const Int32 numTestCases = static_cast<Int32>(testCases.size());
     const Char* suiteName = suite.GetName();
-    printf((numTestCases == 1) ? "%sTest suite --- %s (%d test case)%s\n" : "%sTest suite --- %s (%d test cases)%s\n", kWhiteBold, suiteName,
-           numTestCases, kReset);
+    printf((numTestCases == 1) ? "%sTest suite --- %s (%d test case)%s\n"
+                               : "%sTest suite --- %s (%d test cases)%s\n",
+           kWhiteBold, suiteName, numTestCases, kReset);
 
     TestTimer timer{};
     TestCaseResult result{};
@@ -119,14 +132,16 @@ void TestExecutor::RunTestSuite(TestSuite& suite) {
 
 void TestExecutor::ProcessTestCaseResult(const TestCaseResult& result) {
     if (result.IsPassed()) {
-        printf("%s>>%s %sTest case%s %s|%s %s (%.3lf ms) ... %sPassed%s\n", kWhiteBold, kReset, kDark, kReset, kWhiteBold, kReset,
-               result.GetTestCaseName(), result.GetElapsedTime(), kGreenBold, kReset);
+        printf("%s>>%s %sTest case%s %s|%s %s (%.3lf ms) ... %sPassed%s\n", kWhiteBold, kReset,
+               kDark, kReset, kWhiteBold, kReset, result.GetTestCaseName(), result.GetElapsedTime(),
+               kGreenBold, kReset);
         ++mNumPassedTestCases;
         return;
     }
 
-    printf("%s>>%s %sTest case%s %s|%s %s (%.3lf ms) ... %sFailed%s\n", kWhiteBold, kReset, kDark, kReset, kWhiteBold, kReset,
-           result.GetTestCaseName(), result.GetElapsedTime(), kRedBold, kReset);
+    printf("%s>>%s %sTest case%s %s|%s %s (%.3lf ms) ... %sFailed%s\n", kWhiteBold, kReset, kDark,
+           kReset, kWhiteBold, kReset, result.GetTestCaseName(), result.GetElapsedTime(), kRedBold,
+           kReset);
     ++mNumFailedTestCases;
 
     const std::vector<FailedTestInfo>& infos = result.GetInfos();
@@ -135,10 +150,12 @@ void TestExecutor::ProcessTestCaseResult(const TestCaseResult& result) {
 
         switch (info.GetFailureType()) {
             case ETestFailureType::Test:
-                printf("   -> %sTest failed: %s:%d%s\n", kRed, info.GetFile(), info.GetLine(), kReset);
+                printf("   -> %sTest failed: %s:%d%s\n", kRed, info.GetFile(), info.GetLine(),
+                       kReset);
                 break;
             case ETestFailureType::Assertion:
-                printf("   -> %sAssertion failed: %s:%d%s\n", kRedBold, info.GetFile(), info.GetLine(), kReset);
+                printf("   -> %sAssertion failed: %s:%d%s\n", kRedBold, info.GetFile(),
+                       info.GetLine(), kReset);
                 break;
             default:
                 break;

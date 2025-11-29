@@ -21,7 +21,8 @@ namespace Internal {
     }
 
     template <typename T, typename SizeType, Bool USE_MOVE = IsMoveConstructible_V<T>>
-    OPX_INLINE void MoveOrCopyConstructItems(T* dest, TypeChooser_T<USE_MOVE, T*, const T*> source, SizeType num) {
+    OPX_INLINE void MoveOrCopyConstructItems(T* dest, TypeChooser_T<USE_MOVE, T*, const T*> source,
+                                             SizeType num) {
         if constexpr (USE_MOVE) {
             Memory::MoveConstructItems<T, SizeType>(dest, source, num);
         } else {
@@ -30,7 +31,8 @@ namespace Internal {
     }
 
     template <typename T, typename SizeType, Bool USE_MOVE = IsMoveAssignable_V<T>>
-    OPX_INLINE void MoveOrCopyAssignItems(T* dest, TypeChooser_T<USE_MOVE, T*, const T*> source, SizeType num) {
+    OPX_INLINE void MoveOrCopyAssignItems(T* dest, TypeChooser_T<USE_MOVE, T*, const T*> source,
+                                          SizeType num) {
         if constexpr (USE_MOVE) {
             Memory::MoveAssignItems<T, SizeType>(dest, source, num);
         } else {
@@ -39,7 +41,9 @@ namespace Internal {
     }
 
     template <typename T, typename SizeType, Bool USE_MOVE = IsMoveAssignable_V<T>>
-    OPX_INLINE void MoveOrCopyBackwardAssignItems(T* dest, TypeChooser_T<USE_MOVE, T*, const T*> source, SizeType num) {
+    OPX_INLINE void MoveOrCopyBackwardAssignItems(T* dest,
+                                                  TypeChooser_T<USE_MOVE, T*, const T*> source,
+                                                  SizeType num) {
         if constexpr (USE_MOVE) {
             Memory::MoveBackwardAssignItems<T, SizeType>(dest, source, num);
         } else {
@@ -64,26 +68,35 @@ public:
 
     static OPX_CONSTEXPR Float kGrowthFactor = 2.f;
     static OPX_CONSTEXPR SizeType kInvalidIndex = OPX_INVALID_INDEX;
-    static OPX_CONSTEXPR SizeType kMaxCapacity = static_cast<SizeType>(NumericLimits<SizeType>::kMax / sizeof(ElementType));
-    static OPX_CONSTEXPR SizeType kMaxGrowthCapacity = static_cast<SizeType>(static_cast<Float>(kMaxCapacity) / kGrowthFactor);
+    static OPX_CONSTEXPR SizeType kMaxCapacity =
+        static_cast<SizeType>(NumericLimits<SizeType>::kMax / sizeof(ElementType));
+    static OPX_CONSTEXPR SizeType kMaxGrowthCapacity =
+        static_cast<SizeType>(static_cast<Float>(kMaxCapacity) / kGrowthFactor);
 
 public:
     Vector() noexcept : mData(nullptr), mSize(0), mCapacity(0) {}
 
     explicit Vector(SizeType num) { Init<EInitMethod::DefaultConstruct>(num, num, nullptr); }
 
-    Vector(SizeType num, ConstReferenceType value) { Init<EInitMethod::FillConstruct>(num, num, &value); }
+    Vector(SizeType num, ConstReferenceType value) {
+        Init<EInitMethod::FillConstruct>(num, num, &value);
+    }
 
-    Vector(SizeType num, ConstPointerType pointer) { Init<EInitMethod::CopyConstruct>(num, num, pointer); }
+    Vector(SizeType num, ConstPointerType pointer) {
+        Init<EInitMethod::CopyConstruct>(num, num, pointer);
+    }
 
     Vector(std::initializer_list<ElementType> list) {
         auto size = static_cast<SizeType>(list.size());
         Init<EInitMethod::CopyConstruct>(size, size, list.begin());
     }
 
-    Vector(const Vector& other) { Init<EInitMethod::CopyConstruct>(other.mSize, other.mSize, other.mData); }
+    Vector(const Vector& other) {
+        Init<EInitMethod::CopyConstruct>(other.mSize, other.mSize, other.mData);
+    }
 
-    Vector(Vector&& other) noexcept : mData(other.mData), mSize(other.mSize), mCapacity(other.mCapacity) {
+    Vector(Vector&& other) noexcept
+        : mData(other.mData), mSize(other.mSize), mCapacity(other.mCapacity) {
         other.mData = nullptr;
         other.mSize = 0;
         other.mCapacity = 0;
@@ -155,12 +168,14 @@ public:
         } else {
             Bool needsShrinking = mSize > sourceSize;
             if (needsShrinking) {
-                Memory::DestructItems<ElementType, SizeType>(mData + sourceSize, sourceSize - mSize);
+                Memory::DestructItems<ElementType, SizeType>(mData + sourceSize,
+                                                             sourceSize - mSize);
             }
             SizeType count = needsShrinking ? sourceSize : mSize;
             Memory::CopyAssignItems<ElementType, SizeType>(mData, source, count);
             if (!needsShrinking) {
-                Memory::CopyConstructItems<ElementType, SizeType>(mData + count, source + count, sourceSize - mSize);
+                Memory::CopyConstructItems<ElementType, SizeType>(mData + count, source + count,
+                                                                  sourceSize - mSize);
             }
             mSize = sourceSize;
         }
@@ -205,19 +220,26 @@ public:
     }
 
     OPX_INLINE void Resize(SizeType newSize) {
-        ResizeImpl(newSize, [&]() { Memory::DefaultConstructItems<ElementType, SizeType>(mData + mSize, newSize - mSize); });
+        ResizeImpl(newSize, [&]() {
+            Memory::DefaultConstructItems<ElementType, SizeType>(mData + mSize, newSize - mSize);
+        });
     }
 
     OPX_INLINE void Resize(SizeType newSize, ConstReferenceType value) {
-        ResizeImpl(newSize, [&]() { Memory::FillConstructItems<ElementType, SizeType>(mData + mSize, value, newSize - mSize); });
+        ResizeImpl(newSize, [&]() {
+            Memory::FillConstructItems<ElementType, SizeType>(mData + mSize, value,
+                                                              newSize - mSize);
+        });
     }
 
     OPX_INLINE friend Bool operator==(const Vector<T>& lhs, const Vector<T>& rhs) {
-        return lhs.mSize == rhs.mSize && Algorithm::Equal(lhs.mData, lhs.mData + lhs.mSize, rhs.mData);
+        return lhs.mSize == rhs.mSize &&
+               Algorithm::Equal(lhs.mData, lhs.mData + lhs.mSize, rhs.mData);
     }
 
     OPX_INLINE friend Bool operator!=(const Vector<T>& lhs, const Vector<T>& rhs) {
-        return lhs.mSize != rhs.mSize || !Algorithm::Equal(lhs.mData, lhs.mData + lhs.mSize, rhs.mData);
+        return lhs.mSize != rhs.mSize ||
+               !Algorithm::Equal(lhs.mData, lhs.mData + lhs.mSize, rhs.mData);
     }
 
     template <typename... ArgTypes>
@@ -248,7 +270,8 @@ public:
     SizeType RemoveAt(SizeType index, SizeType count = 1) {
         OPX_ASSERT(index >= 0 && count >= 0 && index + count <= mSize);
         mSize -= count;
-        Internal::MoveOrCopyAssignItems<ElementType, SizeType>(mData + index, mData + index + count, mSize - index);
+        Internal::MoveOrCopyAssignItems<ElementType, SizeType>(mData + index, mData + index + count,
+                                                               mSize - index);
         Memory::DestructItems<ElementType, SizeType>(mData + mSize, count);
         return index;
     }
@@ -265,27 +288,29 @@ public:
     }
 
     OPX_INLINE void Append(SizeType count, ConstPointerType items) {
-        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>), Memory::CopyConstructItems<ElementType, SizeType>>(
-            count, items);
+        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>),
+                   Memory::CopyConstructItems<ElementType, SizeType>>(count, items);
     }
 
     OPX_INLINE void Append(const Vector& other) {
-        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>), Memory::CopyConstructItems<ElementType, SizeType>>(
-            other.mSize, other.mData);
+        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>),
+                   Memory::CopyConstructItems<ElementType, SizeType>>(other.mSize, other.mData);
     }
     OPX_INLINE void Append(std::initializer_list<ElementType> list) {
-        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>), Memory::CopyConstructItems<ElementType, SizeType>>(
+        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>),
+                   Memory::CopyConstructItems<ElementType, SizeType>>(
             static_cast<SizeType>(list.size()), list.begin());
     }
 
     OPX_INLINE Vector& operator+=(const Vector& other) {
-        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>), Memory::CopyConstructItems<ElementType, SizeType>>(
-            other.mSize, other.mData);
+        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>),
+                   Memory::CopyConstructItems<ElementType, SizeType>>(other.mSize, other.mData);
         return *this;
     }
 
     OPX_INLINE Vector& operator+=(std::initializer_list<ElementType> list) {
-        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>), Memory::CopyConstructItems<ElementType, SizeType>>(
+        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>),
+                   Memory::CopyConstructItems<ElementType, SizeType>>(
             static_cast<SizeType>(list.size()), list.begin());
         return *this;
     }
@@ -302,7 +327,8 @@ public:
             auto newData = BeginReallocate(GetNewCapacity());
             new (out = newData + index) ElementType(Forward<ArgTypes>(args)...);
             Internal::MoveOrCopyConstructItems<ElementType, SizeType>(newData, mData, index);
-            Internal::MoveOrCopyConstructItems<ElementType, SizeType>(newData + index + 1, mData + index, mSize - index);
+            Internal::MoveOrCopyConstructItems<ElementType, SizeType>(newData + index + 1,
+                                                                      mData + index, mSize - index);
             EndReallocate(newData);
         } else {
             PointerType dest = mData + mSize;
@@ -323,22 +349,26 @@ public:
     OPX_INLINE ReferenceType InsertDefaulted(SizeType index) { return EmplaceAt(index); }
 
     OPX_INLINE SizeType Insert(SizeType index, SizeType num, ConstPointerType items) {
-        return InsertImpl<ConstPointerType>(index, num, items, Memory::CopyConstructItems<ElementType, SizeType>,
+        return InsertImpl<ConstPointerType>(index, num, items,
+                                            Memory::CopyConstructItems<ElementType, SizeType>,
                                             Memory::CopyAssignItems<ElementType, SizeType>);
     }
 
     OPX_INLINE SizeType Insert(SizeType index, SizeType num, ConstReferenceType value) {
-        return InsertImpl<ConstReferenceType>(index, num, value, Memory::FillConstructItems<ElementType, SizeType>,
+        return InsertImpl<ConstReferenceType>(index, num, value,
+                                              Memory::FillConstructItems<ElementType, SizeType>,
                                               Memory::FillAssignItems<ElementType, SizeType>);
     }
 
     OPX_INLINE SizeType Insert(SizeType index, const Vector& vec) {
-        return InsertImpl<ConstPointerType>(index, vec.mSize, vec.mData, Memory::CopyConstructItems<ElementType, SizeType>,
+        return InsertImpl<ConstPointerType>(index, vec.mSize, vec.mData,
+                                            Memory::CopyConstructItems<ElementType, SizeType>,
                                             Memory::CopyAssignItems<ElementType, SizeType>);
     }
     OPX_INLINE SizeType Insert(SizeType index, std::initializer_list<ElementType> list) {
         return InsertImpl<ConstPointerType>(index, static_cast<SizeType>(list.size()), list.begin(),
-                                            Memory::CopyConstructItems<ElementType, SizeType>, Memory::CopyAssignItems<ElementType, SizeType>);
+                                            Memory::CopyConstructItems<ElementType, SizeType>,
+                                            Memory::CopyAssignItems<ElementType, SizeType>);
     }
 
     template <typename Predicate>
@@ -368,7 +398,9 @@ public:
     }
 
     void Reverse() {
-        for (SizeType i = 0, j = mSize - 1, count = static_cast<SizeType>(static_cast<Float>(mSize) * .5f); i < count; ++i, --j) {
+        for (SizeType i = 0, j = mSize - 1,
+                      count = static_cast<SizeType>(static_cast<Float>(mSize) * .5f);
+             i < count; ++i, --j) {
             ElementType Temp = mData[i];
             mData[i] = mData[j];
             mData[j] = Temp;
@@ -382,8 +414,10 @@ private:
     static Vector ConcatenateVectorsImpl(LhsVector lhs, RhsVector rhs) {
         OPX_ASSERT(lhs.mSize <= kMaxCapacity && rhs.mSize <= kMaxCapacity - lhs.mSize);
         Vector output(lhs.mSize + rhs.mSize, true);
-        Internal::MoveOrCopyConstructItems<ElementType, SizeType, IsRvalueReference_V<LhsVector>>(output.mData, lhs.mData, lhs.mSize);
-        Internal::MoveOrCopyConstructItems<ElementType, SizeType, IsRvalueReference_V<RhsVector>>(output.mData + lhs.mSize, rhs.mData, rhs.mSize);
+        Internal::MoveOrCopyConstructItems<ElementType, SizeType, IsRvalueReference_V<LhsVector>>(
+            output.mData, lhs.mData, lhs.mSize);
+        Internal::MoveOrCopyConstructItems<ElementType, SizeType, IsRvalueReference_V<RhsVector>>(
+            output.mData + lhs.mSize, rhs.mData, rhs.mSize);
         output.mSize = lhs.mSize + rhs.mSize;
         return output;
     }
@@ -418,7 +452,8 @@ private:
         OPX_ASSERT(size >= 0 && capacity >= 0 && capacity <= kMaxCapacity);
         mSize = size;
         mCapacity = capacity;
-        auto data = static_cast<PointerType>(Memory::Allocate(sizeof(ElementType) * static_cast<SizeT>(mCapacity)));
+        auto data = static_cast<PointerType>(
+            Memory::Allocate(sizeof(ElementType) * static_cast<SizeT>(mCapacity)));
 
         if constexpr (METHOD == EInitMethod::FillConstruct) {
             Memory::FillConstructItems<ElementType, SizeType>(data, *source, mSize);
@@ -435,11 +470,14 @@ private:
     }
 
     template <Bool USE_MOVE>
-    void Reallocate(SizeType newCapacity, SizeType sourceSize, TypeChooser_T<USE_MOVE, PointerType, ConstPointerType> source) {
+    void Reallocate(SizeType newCapacity, SizeType sourceSize,
+                    TypeChooser_T<USE_MOVE, PointerType, ConstPointerType> source) {
         OPX_ASSERT(newCapacity >= 0 && newCapacity <= kMaxCapacity && sourceSize >= 0);
-        auto data = static_cast<PointerType>(Memory::Allocate(sizeof(ElementType) * static_cast<SizeT>(newCapacity)));
+        auto data = static_cast<PointerType>(
+            Memory::Allocate(sizeof(ElementType) * static_cast<SizeT>(newCapacity)));
         if (sourceSize > 0 && source) {
-            Internal::MoveOrCopyConstructItems<ElementType, SizeType, USE_MOVE>(data, source, sourceSize);
+            Internal::MoveOrCopyConstructItems<ElementType, SizeType, USE_MOVE>(data, source,
+                                                                                sourceSize);
         }
         ReleaseInternal();
         mData = data, mCapacity = newCapacity, mSize = sourceSize;
@@ -447,7 +485,8 @@ private:
 
     PointerType BeginReallocate(SizeType newCapacity) {
         mCapacity = newCapacity;
-        return static_cast<PointerType>(Memory::Allocate(sizeof(ElementType) * static_cast<SizeT>(newCapacity)));
+        return static_cast<PointerType>(
+            Memory::Allocate(sizeof(ElementType) * static_cast<SizeT>(newCapacity)));
     }
 
     void EndReallocate(PointerType newData) {
@@ -465,7 +504,8 @@ private:
             if (numItemsToAdd < kMaxCapacity - mCapacity) {
                 if (mCapacity < kMaxGrowthCapacity) {
                     const SizeType newCapacityA = mCapacity + numItemsToAdd;
-                    const SizeType newCapacityB = static_cast<SizeType>(static_cast<Float>(mCapacity) * kGrowthFactor);
+                    const SizeType newCapacityB =
+                        static_cast<SizeType>(static_cast<Float>(mCapacity) * kGrowthFactor);
                     return OPX_MAX(newCapacityA, newCapacityB);
                 }
                 return mCapacity + numItemsToAdd;
@@ -491,20 +531,23 @@ private:
     }
 
     template <typename ValueType, typename ConstructFn, typename AssignFn>
-    SizeType InsertImpl(SizeType index, SizeType num, ValueType value, ConstructFn constructFn, AssignFn assignFn) {
+    SizeType InsertImpl(SizeType index, SizeType num, ValueType value, ConstructFn constructFn,
+                        AssignFn assignFn) {
         OPX_ASSERT(index >= 0 && index <= mSize && num >= 0);
 
         if (mCapacity - mSize <= num) {
             auto newData = BeginReallocate(GetNewCapacity(num));
             Internal::MoveOrCopyConstructItems<ElementType, SizeType>(newData, mData, index);
             constructFn(newData + index, value, num);
-            Internal::MoveOrCopyConstructItems<ElementType, SizeType>(newData + index + num, mData + index, mSize - index);
+            Internal::MoveOrCopyConstructItems<ElementType, SizeType>(newData + index + num,
+                                                                      mData + index, mSize - index);
             EndReallocate(newData);
         } else {
             if (index + num >= mSize) {
                 auto source = mData + index;
                 auto count = mSize - index;
-                Internal::MoveOrCopyConstructItems<ElementType, SizeType>(source + num, source, count);
+                Internal::MoveOrCopyConstructItems<ElementType, SizeType>(source + num, source,
+                                                                          count);
                 assignFn(mData + index, value, count);
                 if constexpr (IsSame_V<ValueType, ConstPointerType>) {
                     constructFn(mData + mSize, value + count, num - count);
@@ -516,7 +559,8 @@ private:
                 Internal::MoveOrCopyConstructItems<ElementType, SizeType>(dest, dest - num, num);
                 auto count = mSize - index - num;
                 auto source = mData + index + count;
-                Internal::MoveOrCopyBackwardAssignItems<ElementType, SizeType>(source + num, source, count);
+                Internal::MoveOrCopyBackwardAssignItems<ElementType, SizeType>(source + num, source,
+                                                                               count);
                 assignFn(mData + index, value, num);
             }
         }

@@ -15,8 +15,9 @@ TEST_CASE(TypeTraits, Rank) {
 }
 
 TEST_CASE(TypeTraits, Extent) {
-    TEST_EXPECT_TRUE(Opx::Extent_V<int[3]> == 3 && Opx::Extent_V<int[3], 0> == 3 && Opx::Extent_V<int[3][4], 0> == 3 &&
-                     Opx::Extent_V<int[3][4], 1> == 4 && Opx::Extent_V<int[3][4], 2> == 0 && Opx::Extent_V<int[]> == 0);
+    TEST_EXPECT_TRUE(Opx::Extent_V<int[3]> == 3 && Opx::Extent_V<int[3], 0> == 3 &&
+                     Opx::Extent_V<int[3][4], 0> == 3 && Opx::Extent_V<int[3][4], 1> == 4 &&
+                     Opx::Extent_V<int[3][4], 2> == 0 && Opx::Extent_V<int[]> == 0);
 
     OPX_MAYBE_UNUSED int ary[][3] = {{1, 2, 3}};
 

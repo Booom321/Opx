@@ -31,11 +31,15 @@ TEST_CASE(Algorithm, Algorithm) {
         TEST_EXPECT_TRUE(Algorithm::Contains(a.begin(), a.end(), 2));
         TEST_EXPECT_TRUE(!Algorithm::Contains(c.begin(), c.end(), 5));
 
-        TEST_EXPECT_TRUE(Algorithm::ContainsIf(a.begin(), a.end(), [](int x) -> Bool { return x % 2 == 0; }));
-        TEST_EXPECT_TRUE(!Algorithm::ContainsIf(c.begin(), c.end(), [](int x) -> Bool { return x % 3 == 0; }));
+        TEST_EXPECT_TRUE(
+            Algorithm::ContainsIf(a.begin(), a.end(), [](int x) -> Bool { return x % 2 == 0; }));
+        TEST_EXPECT_TRUE(
+            !Algorithm::ContainsIf(c.begin(), c.end(), [](int x) -> Bool { return x % 3 == 0; }));
 
-        TEST_EXPECT_TRUE(Algorithm::ContainsIfNot(a.begin(), a.end(), [](int x) -> Bool { return x == 1; }));
-        TEST_EXPECT_TRUE(Algorithm::ContainsIfNot(c.begin(), c.end(), [](int x) -> Bool { return x == 999; }));
+        TEST_EXPECT_TRUE(
+            Algorithm::ContainsIfNot(a.begin(), a.end(), [](int x) -> Bool { return x == 1; }));
+        TEST_EXPECT_TRUE(
+            Algorithm::ContainsIfNot(c.begin(), c.end(), [](int x) -> Bool { return x == 999; }));
     }
 
     TEST_COMMENT("Equal");
@@ -49,14 +53,17 @@ TEST_CASE(Algorithm, Algorithm) {
         TEST_EXPECT_TRUE(Algorithm::Equal(a.begin(), a.end(), b.begin()));
         TEST_EXPECT_TRUE(!Algorithm::Equal(a.begin(), a.end(), c.begin()));
 
-        TEST_EXPECT_TRUE(Algorithm::Equal(a.begin(), a.end(), b.begin(), [](int lhs, int rhs) -> Bool { return lhs == rhs; }));
-        TEST_EXPECT_TRUE(!Algorithm::Equal(a.begin(), a.end(), c.begin(), [](int lhs, int rhs) -> Bool { return lhs == rhs; }));
+        TEST_EXPECT_TRUE(Algorithm::Equal(a.begin(), a.end(), b.begin(),
+                                          [](int lhs, int rhs) -> Bool { return lhs == rhs; }));
+        TEST_EXPECT_TRUE(!Algorithm::Equal(a.begin(), a.end(), c.begin(),
+                                           [](int lhs, int rhs) -> Bool { return lhs == rhs; }));
     }
 
     TEST_COMMENT("Find / FindLast");
     {
         static_assert(Algorithm::Find(kArrayA.begin(), kArrayA.end(), 2) == &kArrayA[1]);
-        static_assert(Algorithm::Find(kArrayA.begin(), kArrayA.end(), 5) == &kArrayA[kArrayA.GetSize()]);
+        static_assert(Algorithm::Find(kArrayA.begin(), kArrayA.end(), 5) ==
+                      &kArrayA[kArrayA.GetSize()]);
 
         static constexpr auto kArrayD = Opx::Array<Int32, 7>{1, 2, 3, 4, 2, 1, 3};
         static_assert(Algorithm::FindLast(kArrayD.begin(), kArrayD.end(), 2) == &kArrayD[4]);
@@ -67,12 +74,15 @@ TEST_CASE(Algorithm, Algorithm) {
         TEST_EXPECT_EQ(Algorithm::Find(a.begin(), a.end(), 2), &a[1]);
         TEST_EXPECT_EQ(Algorithm::Find(a.begin(), a.end(), 7), a.end());
         TEST_EXPECT_EQ(Algorithm::FindIf(a.begin(), a.end(), [](int x) { return x == 3; }), &a[2]);
-        TEST_EXPECT_EQ(Algorithm::FindIfNot(a.begin(), a.end(), [](int x) { return x == 1; }), &a[1]);
+        TEST_EXPECT_EQ(Algorithm::FindIfNot(a.begin(), a.end(), [](int x) { return x == 1; }),
+                       &a[1]);
 
         TEST_EXPECT_EQ(Algorithm::FindLast(a.begin(), a.end(), 3), &a[6]);
         TEST_EXPECT_EQ(Algorithm::FindLast(a.begin(), a.end(), 7), a.end());
-        TEST_EXPECT_EQ(Algorithm::FindLastIf(a.begin(), a.end(), [](int x) { return x % 2 == 0; }), &a[4]);
-        TEST_EXPECT_EQ(Algorithm::FindLastIfNot(a.begin(), a.end(), [](int x) { return x == 3; }), &a[5]);
+        TEST_EXPECT_EQ(Algorithm::FindLastIf(a.begin(), a.end(), [](int x) { return x % 2 == 0; }),
+                       &a[4]);
+        TEST_EXPECT_EQ(Algorithm::FindLastIfNot(a.begin(), a.end(), [](int x) { return x == 3; }),
+                       &a[5]);
     }
 
     TEST_COMMENT("ForEach");

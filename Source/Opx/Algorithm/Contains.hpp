@@ -6,7 +6,8 @@ OPX_NAMESPACE_BEGIN
 
 namespace Algorithm {
     template <typename InputIterator, typename T>
-    OPX_NODISCARD OPX_CONSTEXPR Bool Contains(InputIterator first, InputIterator last, const T& value) {
+    OPX_NODISCARD OPX_CONSTEXPR Bool Contains(InputIterator first, InputIterator last,
+                                              const T& value) {
         for (; first != last; ++first) {
             if (*first == value) {
                 return true;
