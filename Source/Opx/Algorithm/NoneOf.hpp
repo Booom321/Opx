@@ -5,7 +5,7 @@
 OPX_NAMESPACE_BEGIN
 
 namespace Algorithm {
-    template<typename InputIterator, typename Predicate>
+    template <typename InputIterator, typename Predicate>
     Bool NoneOf(InputIterator first, InputIterator last, Predicate pred) {
         for (; first != last; ++first) {
             if (pred(*first)) {
@@ -13,7 +13,7 @@ namespace Algorithm {
             }
         }
         return true;
-    }    
-} // namespace Algorithm
+    }
+}  // namespace Algorithm
 
 OPX_NAMESPACE_END
