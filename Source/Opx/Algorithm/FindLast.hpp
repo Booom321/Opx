@@ -6,36 +6,36 @@ OPX_NAMESPACE_BEGIN
 
 namespace Algorithm {
     template <typename BidirectionalIterator, typename T>
-    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLast(BidirectionalIterator start, BidirectionalIterator end, const T& value) {
-        BidirectionalIterator endTmp(end);
-        while (endTmp != start) {
-            if (*--endTmp == value) {
-                return endTmp;
+    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLast(BidirectionalIterator first, BidirectionalIterator last, const T& value) {
+        BidirectionalIterator lastTmp(last);
+        while (lastTmp != first) {
+            if (*--lastTmp == value) {
+                return lastTmp;
             }
         }
-        return end;
+        return last;
     }
 
     template <typename BidirectionalIterator, typename Predicate>
-    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLastIf(BidirectionalIterator start, BidirectionalIterator end, Predicate pred) {
-        BidirectionalIterator endTmp(end);
-        while (endTmp != start) {
-            if (pred(*--endTmp)) {
-                return endTmp;
+    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLastIf(BidirectionalIterator first, BidirectionalIterator last, Predicate pred) {
+        BidirectionalIterator lastTmp(last);
+        while (lastTmp != first) {
+            if (pred(*--lastTmp)) {
+                return lastTmp;
             }
         }
-        return end;
+        return last;
     }
 
     template <typename BidirectionalIterator, typename Predicate>
-    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLastIfNot(BidirectionalIterator start, BidirectionalIterator end, Predicate pred) {
-        BidirectionalIterator endTmp(end);
-        while (endTmp != start) {
-            if (!pred(*--endTmp)) {
-                return endTmp;
+    OPX_NODISCARD OPX_CONSTEXPR BidirectionalIterator FindLastIfNot(BidirectionalIterator first, BidirectionalIterator last, Predicate pred) {
+        BidirectionalIterator lastTmp(last);
+        while (lastTmp != first) {
+            if (!pred(*--lastTmp)) {
+                return lastTmp;
             }
         }
-        return end;
+        return last;
     }
 }  // namespace Algorithm
 

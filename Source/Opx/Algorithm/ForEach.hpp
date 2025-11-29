@@ -6,9 +6,9 @@ OPX_NAMESPACE_BEGIN
 
 namespace Algorithm {
     template <typename InputIterator, typename ModifierFn>
-    void ForEach(InputIterator start, InputIterator end, ModifierFn fn) {
-        for (; start != end; ++start) {
-            fn(*start);
+    void ForEach(InputIterator first, InputIterator last, ModifierFn fn) {
+        for (; first != last; ++first) {
+            fn(*first);
         }
     }
 }  // namespace Algorithm

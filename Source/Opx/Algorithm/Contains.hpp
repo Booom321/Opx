@@ -6,9 +6,9 @@ OPX_NAMESPACE_BEGIN
 
 namespace Algorithm {
     template <typename InputIterator, typename T>
-    OPX_NODISCARD OPX_CONSTEXPR Bool Contains(InputIterator start, InputIterator end, const T& value) {
-        for (; start != end; ++start) {
-            if (*start == value) {
+    OPX_NODISCARD OPX_CONSTEXPR Bool Contains(InputIterator first, InputIterator last, const T& value) {
+        for (; first != last; ++first) {
+            if (*first == value) {
                 return true;
             }
         }
@@ -16,9 +16,9 @@ namespace Algorithm {
     }
 
     template <typename InputIterator, typename Predicate>
-    OPX_NODISCARD Bool ContainsIf(InputIterator start, InputIterator end, Predicate pred) {
-        for (; start != end; ++start) {
-            if (pred(*start)) {
+    OPX_NODISCARD Bool ContainsIf(InputIterator first, InputIterator last, Predicate pred) {
+        for (; first != last; ++first) {
+            if (pred(*first)) {
                 return true;
             }
         }
@@ -26,9 +26,9 @@ namespace Algorithm {
     }
 
     template <typename InputIterator, typename Predicate>
-    OPX_NODISCARD Bool ContainsIfNot(InputIterator start, InputIterator end, Predicate pred) {
-        for (; start != end; ++start) {
-            if (!pred(*start)) {
+    OPX_NODISCARD Bool ContainsIfNot(InputIterator first, InputIterator last, Predicate pred) {
+        for (; first != last; ++first) {
+            if (!pred(*first)) {
                 return true;
             }
         }
