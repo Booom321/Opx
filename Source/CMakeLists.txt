@@ -13,6 +13,10 @@ if (MSVC)
     target_compile_options(Opx PRIVATE /Yu"OpxPCH.hpp")
 endif()
 
+if (BUILD_SHARED_LIBS)
+    target_compile_definitions(Opx PUBLIC OPX_BUILD_SHARED_LIBS)
+endif()
+
 set_target_default_macros(Opx PUBLIC)
 set_target_default_compile_options(Opx PUBLIC)
 
