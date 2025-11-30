@@ -12,4 +12,6 @@ void TestCaseResult::Reset() {
 
 TestCase::TestCase(const Char* name, TestFunction func) : mName(name), mFunc(func) {}
 
-void TestCase::Run(TestCaseResult& result) const { mFunc(result); }
+void TestCase::Run(TestCaseResult& result) const {
+    mFunc(result);
+}

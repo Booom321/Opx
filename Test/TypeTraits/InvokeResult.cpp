@@ -7,7 +7,9 @@ struct S {
     double g() const { return 0.0; }
 };
 
-int h(float) { return 5; }
+int h(float) {
+    return 5;
+}
 
 struct Fun {
     long operator()(int) { return 2; }

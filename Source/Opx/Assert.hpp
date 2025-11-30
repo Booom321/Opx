@@ -4,12 +4,19 @@
 
 OPX_NAMESPACE_BEGIN
 
-using AssertHandler = void (*)(const Char* expr, const Char* file, const Char* function, Int32 line,
+using AssertHandler = void (*)(const Char* expr,
+                               const Char* file,
+                               const Char* function,
+                               Int32 line,
                                const Char* message);
 
 OPX_API void SetAssertHandler(AssertHandler handler);
-OPX_API void ReportAssertionFailure(const Char* expr, const Char* file, const Char* function,
-                                    Int32 line, const Char* message, ...);
+OPX_API void ReportAssertionFailure(const Char* expr,
+                                    const Char* file,
+                                    const Char* function,
+                                    Int32 line,
+                                    const Char* message,
+                                    ...);
 
 OPX_NAMESPACE_END
 

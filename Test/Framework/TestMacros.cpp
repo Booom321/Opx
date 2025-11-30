@@ -1,12 +1,16 @@
 #include "Framework/Framework.hpp"
 
-Bool CreateTestCase(const Char* testSuiteName, const Char* testCaseName,
+Bool CreateTestCase(const Char* testSuiteName,
+                    const Char* testCaseName,
                     TestCase::TestFunction func) {
     TestExecutor::Get()->GetTestSuiteByName(testSuiteName).AddTestCase(testCaseName, func);
     return true;
 }
 
-void ExpectImpl(TestCaseResult& result, Bool isTrue, const Char* file, Int32 line,
+void ExpectImpl(TestCaseResult& result,
+                Bool isTrue,
+                const Char* file,
+                Int32 line,
                 ETestFailureType failureType) {
     if (isTrue) {
         return;
@@ -16,7 +20,9 @@ void ExpectImpl(TestCaseResult& result, Bool isTrue, const Char* file, Int32 lin
     result.GetInfos().emplace_back(file, line, failureType);
 }
 
-Bool CompareString(const Char* lhs, const Char* rhs) { return strcmp(lhs, rhs) == 0; }
+Bool CompareString(const Char* lhs, const Char* rhs) {
+    return strcmp(lhs, rhs) == 0;
+}
 
 template <typename U>
 class ChooseUIntType;

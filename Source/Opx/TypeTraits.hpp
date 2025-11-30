@@ -229,13 +229,25 @@ template <typename T>
 OPX_CONSTEXPR Bool IsNullPtr_V = IsNullPtr<T>::value;
 
 template <typename T>
-struct IsIntegral
-    : IsAnyOf<RemoveCV_T<T>, bool, char, wchar_t,
+struct IsIntegral : IsAnyOf<RemoveCV_T<T>,
+                            bool,
+                            char,
+                            wchar_t,
 #if defined(__cpp_char8_t)
-              char8_t,
+                            char8_t,
 #endif
-              char16_t, char32_t, unsigned char, unsigned short, unsigned int, unsigned long,
-              unsigned long long, signed char, short, int, long, long long> {
+                            char16_t,
+                            char32_t,
+                            unsigned char,
+                            unsigned short,
+                            unsigned int,
+                            unsigned long,
+                            unsigned long long,
+                            signed char,
+                            short,
+                            int,
+                            long,
+                            long long> {
 };
 template <typename T>
 OPX_CONSTEXPR Bool IsIntegral_V = IsIntegral<T>::value;
@@ -537,7 +549,8 @@ private:
     using U = RemoveReference_T<T>;
 
 public:
-    using type = TypeChooser_T<IsArray_V<U>, AddPointer_T<RemoveExtent_T<U>>,
+    using type = TypeChooser_T<IsArray_V<U>,
+                               AddPointer_T<RemoveExtent_T<U>>,
                                TypeChooser_T<IsFunction_V<U>, AddPointer_T<U>, RemoveCV_T<U>>>;
 };
 template <typename T>

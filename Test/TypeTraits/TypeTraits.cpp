@@ -21,8 +21,12 @@ struct PMTraits<U T::*> {
 };
 
 void Func2() noexcept {}
-int Func3(int) { return 1; }
-double Func4(int, float) noexcept { return 0.0; }
+int Func3(int) {
+    return 1;
+}
+double Func4(int, float) noexcept {
+    return 0.0;
+}
 
 struct Fun {
     long operator()(int) { return 2; }

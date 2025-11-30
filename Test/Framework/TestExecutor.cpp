@@ -26,7 +26,9 @@ Bool SupportsColor() noexcept {
 
 static const Bool kSupportsColor = SupportsColor();
 
-const Char* MakeStyle(const Char* value) { return kSupportsColor ? value : ""; }
+const Char* MakeStyle(const Char* value) {
+    return kSupportsColor ? value : "";
+}
 
 static const Char* kReset = MakeStyle("\033[m");
 static const Char* kBold = MakeStyle("\033[1m");

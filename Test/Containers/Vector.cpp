@@ -3,7 +3,8 @@
 #include <Opx/Containers/Vector.hpp>
 
 template <typename T>
-Bool ExpectTrue(const Opx::Vector<T>& vec, Opx::Int64 expectedSize,
+Bool ExpectTrue(const Opx::Vector<T>& vec,
+                Opx::Int64 expectedSize,
                 std::initializer_list<T> expectedValues) {
     if (vec.GetSize() != expectedSize || vec.GetCapacity() < expectedSize) {
         return false;
@@ -42,9 +43,13 @@ public:
     int value;
 };
 
-Bool operator==(const NonTrivial& lhs, const NonTrivial& rhs) { return lhs.value == rhs.value; }
+Bool operator==(const NonTrivial& lhs, const NonTrivial& rhs) {
+    return lhs.value == rhs.value;
+}
 
-Bool operator!=(const NonTrivial& lhs, const NonTrivial& rhs) { return lhs.value != rhs.value; }
+Bool operator!=(const NonTrivial& lhs, const NonTrivial& rhs) {
+    return lhs.value != rhs.value;
+}
 
 static_assert(!Opx::IsTriviallyConstructible_V<NonTrivial>);
 static_assert(!Opx::IsTriviallyDestructible_V<NonTrivial>);

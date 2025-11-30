@@ -21,7 +21,8 @@ namespace Internal {
     }
 
     template <typename T, typename SizeType, Bool USE_MOVE = IsMoveConstructible_V<T>>
-    OPX_INLINE void MoveOrCopyConstructItems(T* dest, TypeChooser_T<USE_MOVE, T*, const T*> source,
+    OPX_INLINE void MoveOrCopyConstructItems(T* dest,
+                                             TypeChooser_T<USE_MOVE, T*, const T*> source,
                                              SizeType num) {
         if constexpr (USE_MOVE) {
             Memory::MoveConstructItems<T, SizeType>(dest, source, num);
@@ -31,7 +32,8 @@ namespace Internal {
     }
 
     template <typename T, typename SizeType, Bool USE_MOVE = IsMoveAssignable_V<T>>
-    OPX_INLINE void MoveOrCopyAssignItems(T* dest, TypeChooser_T<USE_MOVE, T*, const T*> source,
+    OPX_INLINE void MoveOrCopyAssignItems(T* dest,
+                                          TypeChooser_T<USE_MOVE, T*, const T*> source,
                                           SizeType num) {
         if constexpr (USE_MOVE) {
             Memory::MoveAssignItems<T, SizeType>(dest, source, num);
@@ -470,7 +472,8 @@ private:
     }
 
     template <Bool USE_MOVE>
-    void Reallocate(SizeType newCapacity, SizeType sourceSize,
+    void Reallocate(SizeType newCapacity,
+                    SizeType sourceSize,
                     TypeChooser_T<USE_MOVE, PointerType, ConstPointerType> source) {
         OPX_ASSERT(newCapacity >= 0 && newCapacity <= kMaxCapacity && sourceSize >= 0);
         auto data = static_cast<PointerType>(
@@ -531,7 +534,10 @@ private:
     }
 
     template <typename ValueType, typename ConstructFn, typename AssignFn>
-    SizeType InsertImpl(SizeType index, SizeType num, ValueType value, ConstructFn constructFn,
+    SizeType InsertImpl(SizeType index,
+                        SizeType num,
+                        ValueType value,
+                        ConstructFn constructFn,
                         AssignFn assignFn) {
         OPX_ASSERT(index >= 0 && index <= mSize && num >= 0);
 

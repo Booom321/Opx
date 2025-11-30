@@ -2,9 +2,13 @@
 
 #include "TestExecutor.hpp"
 
-Bool CreateTestCase(const Char* testSuiteName, const Char* testCaseName,
+Bool CreateTestCase(const Char* testSuiteName,
+                    const Char* testCaseName,
                     TestCase::TestFunction func);
-void ExpectImpl(TestCaseResult& result, Bool isTrue, const Char* file, Int32 line,
+void ExpectImpl(TestCaseResult& result,
+                Bool isTrue,
+                const Char* file,
+                Int32 line,
                 ETestFailureType failureType);
 
 Bool CompareString(const Char* lhs, const Char* rhs);

@@ -9,7 +9,9 @@ namespace Memory {
         return pointer;
     }
 
-    void Free(void* pointer) { free(pointer); }
+    void Free(void* pointer) {
+        free(pointer);
+    }
 }  // namespace Memory
 
 OPX_NAMESPACE_END
