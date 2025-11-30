@@ -9,7 +9,7 @@ if (MSVC)
     target_compile_options(Test PRIVATE /Yu"Framework/Framework.hpp")
 endif()
 
-target_include_directories(Test PRIVATE ${ROOT_PATH}/External)
+target_include_directories(Test PRIVATE ${ROOT_PATH}/External/stb)
 target_include_directories(Test PRIVATE ${ROOT_PATH}/Source)
 target_include_directories(Test PRIVATE ${TEST_SOURCE_DIR})
 target_link_libraries(Test PRIVATE Opx)

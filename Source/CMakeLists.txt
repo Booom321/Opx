@@ -5,7 +5,7 @@ file(GLOB_RECURSE OPX_ALL_SOURCE_FILES ${OPX_SOURCE_DIR}/Opx/*.cpp)
 add_library(Opx ${OPX_ALL_HEADER_FILES} ${OPX_ALL_SOURCE_FILES})
 
 target_link_libraries(Opx PUBLIC External)
-target_include_directories(Opx PRIVATE ${ROOT_PATH}/External)
+target_include_directories(Opx PRIVATE ${ROOT_PATH}/External/stb)
 target_include_directories(Opx PRIVATE ${ROOT_PATH}/Source/PCH/)
 
 target_precompile_headers(Opx PRIVATE PCH/OpxPCH.hpp)
