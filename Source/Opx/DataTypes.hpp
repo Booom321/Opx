@@ -27,7 +27,8 @@ using Char8 = char8_t;
 using Char16 = char16_t;
 using Char32 = char32_t;
 
-using NullPtrT = decltype(nullptr);
 using SizeT = decltype(sizeof(0));
+using NullPtrT = decltype(nullptr);
+using PtrOffsetT = decltype(static_cast<int*>(nullptr) - static_cast<int*>(nullptr));
 
 OPX_NAMESPACE_END
