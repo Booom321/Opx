@@ -34,3 +34,4 @@ message(STATUS "==============================================================="
 add_subdirectory(External)
 add_subdirectory(Source)
 add_subdirectory(Test)
+add_subdirectory(Benchmark)
