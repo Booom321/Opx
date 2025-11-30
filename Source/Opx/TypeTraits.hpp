@@ -710,4 +710,7 @@ struct IsNothrowDestructible : BoolConstant<std::is_nothrow_destructible_v<T>> {
 template <typename T>
 OPX_CONSTEXPR Bool IsNothrowDestructible_V = IsNothrowDestructible<T>::value;
 
+template <typename...>
+using Void_T = void;
+
 OPX_NAMESPACE_END
