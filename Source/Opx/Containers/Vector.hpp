@@ -502,12 +502,12 @@ private:
         Memory::Free(mData);
     }
 
-    SizeType GetNewCapacity(SizeType numItemsToAdd = 1) {
+    SizeType GetNewCapacity(SizeType numItemsToAdd = 1) const {
         if (mCapacity > 0) {
             if (numItemsToAdd < kMaxCapacity - mCapacity) {
                 if (mCapacity < kMaxGrowthCapacity) {
                     const SizeType newCapacityA = mCapacity + numItemsToAdd;
-                    const SizeType newCapacityB =
+                    const auto newCapacityB =
                         static_cast<SizeType>(static_cast<Float>(mCapacity) * kGrowthFactor);
                     return OPX_MAX(newCapacityA, newCapacityB);
                 }
