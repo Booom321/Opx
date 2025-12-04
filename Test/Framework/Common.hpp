@@ -1,5 +1,18 @@
-#if defined(TEST_BUILD_SHARED_LIBS)
-#if defined(TEST_DLL_EXPORT)
+#pragma once
+
+#if defined(_MSC_VER)
+#define TEST_IMPORT __declspec(dllimport)
+#define TEST_EXPORT __declspec(dllexport)
+#elif defined(__GNUC__) || defined(__clang__)
+#define TEST_IMPORT
+#define TEST_EXPORT __attribute__((visibility("default")))
+#else
+#define TEST_IMPORT
+#define TEST_EXPORT
+#endif
+
+#if defined(TEST_BUILD_SHARED_LIBS) && TEST_BUILD_SHARED_LIBS
+#if defined(TEST_EXPORT_SHARED_LIBS)
 #define TEST_API TEST_EXPORT
 #else
 #define TEST_API TEST_IMPORT
