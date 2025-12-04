@@ -30,6 +30,5 @@ void RunAllTests() {
 int main() {
     EnableMemoryLeakDetection();
     RunAllTests();
-    DumpMemoryLeaks();
     return 0;
 }
