@@ -84,32 +84,6 @@ namespace BM {
         Nanosecond = 3,
     };
 
-    class Timer {
-    public:
-        Timer() = default;
-
-        BENCHMARK_INLINE void Reset() { mNow = Clock::now(); }
-
-        BENCHMARK_INLINE typename Seconds::rep ElapsedS() const {
-            return std::chrono::duration_cast<Seconds>(Clock::now() - mNow).count();
-        }
-
-        BENCHMARK_INLINE typename Milliseconds::rep ElapsedMs() const {
-            return std::chrono::duration_cast<Milliseconds>(Clock::now() - mNow).count();
-        }
-
-        BENCHMARK_INLINE typename Microseconds::rep ElapsedUs() const {
-            return std::chrono::duration_cast<Microseconds>(Clock::now() - mNow).count();
-        }
-
-        BENCHMARK_INLINE typename Nanoseconds::rep ElapsedNs() const {
-            return std::chrono::duration_cast<Nanoseconds>(Clock::now() - mNow).count();
-        }
-
-    private:
-        TimePoint mNow{Clock::now()};
-    };
-
     class BenchmarkResult {
     public:
         UInt64 mIterations;
@@ -187,7 +161,6 @@ namespace BM {
         void DisplayAnalysisResults();
 
         void GenerateTableHeader();
-        void GenerateTableRowFmt();
 
         void PrintLineSeparator(char c);
         void PrintTableHeader();
