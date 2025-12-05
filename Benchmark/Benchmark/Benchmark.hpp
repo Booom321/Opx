@@ -3,6 +3,7 @@
 #include <chrono>
 #include <vector>
 #include <string>
+#include <atomic>
 
 #if defined(_MSC_VER)
 #define BENCHMARK_IMPORT __declspec(dllimport)
@@ -63,7 +64,7 @@ namespace BM {
     template <typename T>
     BENCHMARK_INLINE void DoNotOptimize(T& value) {
         volatile T* volatile ptr = &value;
-        *ptr = value;
+        (void)*ptr;
     }
 #else
     template <typename T>
@@ -76,6 +77,11 @@ namespace BM {
         asm volatile("" : "+r,m"(value) : : "memory");
     }
 #endif
+
+    // https://github.com/google/benchmark/blob/main/include/benchmark/benchmark.h#L519
+    BENCHMARK_INLINE void ClobberMemory() {
+        std::atomic_signal_fence(std::memory_order_acq_rel);
+    }
 
     enum class ETimeUnits : Int8 {
         Second = 0,
@@ -223,3 +229,4 @@ namespace BM {
     }
 
 #define BENCHMARK_DO_NOT_OPTIMIZE(...) ::BM::DoNotOptimize(__VA_ARGS__)
+#define BENCHMARK_CLOBBER_MEMORY(...) ::BM::ClobberMemory()

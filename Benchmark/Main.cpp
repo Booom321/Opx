@@ -8,19 +8,17 @@ void StringCreation(uint64_t iterations) {
 }
 
 void StringCopy(uint64_t iterations) {
-    std::string s = "hello world!";
+    std::string s = "hello";
     for (uint64_t i = 0; i < iterations; i++) {
         std::string copy(s);
-        BENCHMARK_DO_NOT_OPTIMIZE(s);
+        BENCHMARK_DO_NOT_OPTIMIZE(copy);
     }
 }
 
 BENCHMARK_REGISTER(Test, StringCreation, StringCreation)
-    ->SetWarmUpRuns(10000)
+    ->SetWarmUpRuns(100)
     ->AddIterations(100000, 10, 4);
 
-BENCHMARK_REGISTER(Test, StringCopy, StringCopy)
-    ->SetWarmUpRuns(10000)
-    ->AddIterations(100000, 10, 4);
+BENCHMARK_REGISTER(Test, StringCopy, StringCopy)->SetWarmUpRuns(100)->AddIterations(100000, 10, 4);
 
 BENCHMARK_MAIN();
