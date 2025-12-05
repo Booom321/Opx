@@ -1,5 +1,7 @@
 #include "Benchmark.hpp"
 
+#include <Opx/Preprocessor.hpp>
+
 #include <stb_sprintf.h>
 
 #include <algorithm>
@@ -14,32 +16,6 @@
 #endif
 
 namespace BM {
-    class Timer {
-    public:
-        Timer() = default;
-
-        BENCHMARK_INLINE void Reset() { mNow = Clock::now(); }
-
-        BENCHMARK_INLINE typename Seconds::rep ElapsedS() const {
-            return std::chrono::duration_cast<Seconds>(Clock::now() - mNow).count();
-        }
-
-        BENCHMARK_INLINE typename Milliseconds::rep ElapsedMs() const {
-            return std::chrono::duration_cast<Milliseconds>(Clock::now() - mNow).count();
-        }
-
-        BENCHMARK_INLINE typename Microseconds::rep ElapsedUs() const {
-            return std::chrono::duration_cast<Microseconds>(Clock::now() - mNow).count();
-        }
-
-        BENCHMARK_INLINE typename Nanoseconds::rep ElapsedNs() const {
-            return std::chrono::duration_cast<Nanoseconds>(Clock::now() - mNow).count();
-        }
-
-    private:
-        TimePoint mNow{Clock::now()};
-    };
-
     static constexpr UInt64 kMaxIterations = 10'000'000'000;
     static constexpr UInt64 kMaxWarmUpRuns = 10'000'000;
 
@@ -57,16 +33,18 @@ namespace BM {
         "ns",
     };
 
-    double GetElapsedByTimeUnit(const Timer& timer, ETimeUnits units) {
+    double GetElapsedByTimeUnit(Microseconds duration, ETimeUnits units) {
+        using namespace std::chrono;
+
         switch (units) {
             case ETimeUnits::Second:
-                return timer.ElapsedS();
+                return duration_cast<Seconds>(duration).count();
             case ETimeUnits::Millisecond:
-                return timer.ElapsedMs();
+                return duration_cast<Milliseconds>(duration).count();
             case ETimeUnits::Microsecond:
-                return timer.ElapsedUs();
+                return duration_cast<Microseconds>(duration).count();
             case ETimeUnits::Nanosecond:
-                return timer.ElapsedNs();
+                return duration_cast<Nanoseconds>(duration).count();
         }
         return 0.0;
     }
@@ -171,11 +149,12 @@ namespace BM {
         }
 
         mResults.reserve(mIterations.size());
-        Timer timer{};
+
         for (UInt64 iterations : mIterations) {
-            timer.Reset();
+            auto start = Clock::now();
             mFunction(iterations);
-            const auto elapsed = GetElapsedByTimeUnit(timer, mTimeUnit);
+            auto end = Clock::now();
+            const auto elapsed = GetElapsedByTimeUnit(end - start, mTimeUnit);
             mResults.emplace_back(BenchmarkResult{iterations, elapsed});
         }
     }
