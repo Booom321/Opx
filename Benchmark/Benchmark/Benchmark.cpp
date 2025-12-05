@@ -253,18 +253,18 @@ namespace BM {
                            kStddevColSize, "Stddev");
         }
 
-        tableHeader = buffer;
+        mTableHeader = buffer;
     }
 
     void BenchmarkGroup::PrintLineSeparator(char c) {
         char lineSeparator[512];
         memset(lineSeparator, '\0', sizeof(lineSeparator));
-        memset(lineSeparator, c, tableHeader.size());
+        memset(lineSeparator, c, mTableHeader.size());
         printf("%s\n", lineSeparator);
     }
 
     void BenchmarkGroup::PrintTableHeader() {
-        printf("%s\n", tableHeader.c_str());
+        printf("%s\n", mTableHeader.c_str());
     }
 
     void BenchmarkGroup::PrintRow(const AnalysisResult& result) {

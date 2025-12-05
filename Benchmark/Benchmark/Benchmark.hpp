@@ -175,8 +175,8 @@ namespace BM {
         Benchmark* mBaseline;
 
         std::string mGroupName;
-        std::string tableHeader;
-        std::string tableRowFmt;
+        std::string mTableHeader;
+        std::string mTableRowFmt;
 
         std::vector<Benchmark> mBenchmarks;
         std::vector<AnalysisResult> mResults{};
