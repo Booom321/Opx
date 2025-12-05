@@ -16,8 +16,8 @@
 #endif
 
 namespace BM {
-    static constexpr UInt64 kMaxIterations = 10'000'000'000;
-    static constexpr UInt64 kMaxWarmUpRuns = 10'000'000;
+    static constexpr UInt64 kMaxIterations = 1'000'000'000;
+    static constexpr UInt64 kMaxWarmUpRuns = 1'000;
 
     static constexpr Int64 kTimeUnitInSeconds[] = {
         1,             // Seconds
@@ -49,33 +49,6 @@ namespace BM {
         return 0.0;
     }
 
-    // https://github.com/agauniyal/rang/blob/22345aa4c468db3bd4a0e64a47722aad3518cc81/include/rang.hpp#L139
-    // https://github.com/gabime/spdlog/blob/8806ca6509f037cf7612ea292338e3b222209dc1/include/spdlog/details/os-inl.h#L401
-    bool SupportsColor() noexcept {
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-        return true;
-#elif defined(__unix__) || defined(__unix) || defined(__linux__) || defined(__APPLE__) || \
-    defined(__MACH__)
-        const char* EnvTERM = std::getenv("TERM");
-        const char* EnvCOLORTERM = std::getenv("COLORTERM");
-        if (EnvTERM || EnvCOLORTERM) {
-            return true;
-        }
-
-        static constexpr std::array<const char*, 16> kTerms = {
-            {"ansi", "color", "console", "cygwin", "gnome", "konsole", "kterm", "linux", "msys",
-             "putty", "rxvt", "screen", "vt100", "xterm", "alacritty", "vt102"}};
-
-        return std::any_of(kTerms.begin(), kTerms.end(),
-                           [&](const Char* term) { return std::strstr(EnvTERM, term) != nullptr; });
-#endif
-    }
-
-    static const bool kSupportsColor = SupportsColor();
-    const char* MakeStyle(const char* value) {
-        return kSupportsColor ? value : "";
-    }
-
     template <typename T = double>
     constexpr T ConvertTimeUnit(ETimeUnits from, ETimeUnits to, T time) {
         return static_cast<T>(time) * (static_cast<T>(kTimeUnitInSeconds[static_cast<int>(to)]) /
@@ -87,21 +60,23 @@ namespace BM {
             return 0.0;
         }
 
-        double totalPerOp = 0.0;
+        double mean = 0.0;
+        double m2 = 0.0;
+        UInt64 count = 0;
+
         for (const auto& result : results) {
-            totalPerOp += result.mElapsed / static_cast<double>(result.mIterations);
+            double perOpInUnit =
+                static_cast<double>(result.mElapsed) / static_cast<double>(result.mIterations);
+            double perOpNs = ConvertTimeUnit(unit, ETimeUnits::Nanosecond, perOpInUnit);
+            count += 1;
+            double delta = perOpNs - mean;
+            mean += delta / static_cast<double>(count);
+            double delta2 = perOpNs - mean;
+            m2 += delta * delta2;
         }
 
-        const double mean = ConvertTimeUnit(unit, ETimeUnits::Nanosecond, totalPerOp) /
-                            static_cast<double>(results.size());
-        double squaredDifferencesSum = 0.0;
-        for (const auto& result : results) {
-            double perOp = result.mElapsed / static_cast<double>(result.mIterations);
-            double diff = ConvertTimeUnit(unit, ETimeUnits::Nanosecond, perOp) - mean;
-            squaredDifferencesSum += diff * diff;
-        }
-
-        return std::sqrt(squaredDifferencesSum / static_cast<double>(results.size() - 1));
+        double variance_sample = m2 / static_cast<double>(count - 1);
+        return std::sqrt(variance_sample);
     }
 
     double ComputeFactorBaseline(const BenchmarkGroup::AnalysisResult& baseline,
@@ -143,18 +118,38 @@ namespace BM {
         return this;
     }
 
+    double MeasureEmpty(UInt64 iterations, ETimeUnits timeUnit) {
+        double total = 0.0;
+        for (int rep = 0; rep < 3; ++rep) {
+            auto start = Clock::now();
+            for (UInt64 i = 0; i < iterations; ++i) {
+#if defined(__GNUC__) || defined(__clang__)
+                asm volatile("");
+#else
+                volatile int x = 0;
+                (void)x;
+#endif
+            }
+            auto end = Clock::now();
+            total += GetElapsedByTimeUnit(end - start, timeUnit);
+        }
+        return total / 3;
+    }
+
     void Benchmark::Run() {
         for (UInt64 i = 0; i < mWarmUpRuns; ++i) {
-            mFunction(1);
+            mFunction(100ull);
         }
 
+        std::sort(mIterations.begin(), mIterations.end());
         mResults.reserve(mIterations.size());
-
-        for (UInt64 iterations : mIterations) {
+        for (const auto iterations : mIterations) {
+            const auto emptyElapsed = MeasureEmpty(iterations, mTimeUnit);
             auto start = Clock::now();
             mFunction(iterations);
             auto end = Clock::now();
-            const auto elapsed = GetElapsedByTimeUnit(end - start, mTimeUnit);
+            const auto elapsed =
+                std::max(0.0, GetElapsedByTimeUnit(end - start, mTimeUnit) - emptyElapsed);
             mResults.emplace_back(BenchmarkResult{iterations, elapsed});
         }
     }
