@@ -17,11 +17,13 @@ Bool CompareDouble(Double lhs, Double rhs, UInt64 maxUlps = 4);
 
 #define TEST_CASE_RESULT_VAR result
 
-#define TEST_CASE(testSuiteName, testCaseName)                                            \
+#define TEST_CASE_IMPL(testSuiteName, testCaseName)                                       \
     void Test##testSuiteName##testCaseName(TestCaseResult&);                              \
     static const Bool TestCase##testSuiteName##testCaseName =                             \
         CreateTestCase(#testSuiteName, #testCaseName, Test##testSuiteName##testCaseName); \
     void Test##testSuiteName##testCaseName(TestCaseResult& TEST_CASE_RESULT_VAR)
+
+#define TEST_CASE(testSuiteName, testCaseName) TEST_CASE_IMPL(testSuiteName, testCaseName)
 
 #define TEST_EXPECT_TRUE(...) \
     ExpectImpl(TEST_CASE_RESULT_VAR, (__VA_ARGS__), __FILE__, __LINE__, ETestFailureType::Test)
