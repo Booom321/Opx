@@ -2,6 +2,8 @@
 
 #include <initializer_list>
 
+#include "Details/ContiguousContainer.hpp"
+
 #include "../Assert.hpp"
 #include "../Memory/Memory.hpp"
 #include "../Algorithm/Equal.hpp"
@@ -55,28 +57,31 @@ namespace Internal {
 }  // namespace Internal
 
 template <typename T>
-class Vector {
+class Vector : public Details::ContiguousContainer<T> {
 public:
-    using SizeType = Int64;
+    using Base = Details::ContiguousContainer<T>;
 
-    using ElementType = T;
-    using ReferenceType = T&;
-    using PointerType = T*;
-    using ConstReferenceType = const T&;
-    using ConstPointerType = const T*;
+    using SizeType = typename Base::SizeType;
 
-    using IteratorType = T*;
-    using ConstIteratorType = const T*;
+    using ElementType = typename Base::ElementType;
+    using ReferenceType = typename Base::ReferenceType;
+    using PointerType = typename Base::PointerType;
+    using ConstReferenceType = typename Base::ConstReferenceType;
+    using ConstPointerType = typename Base::ConstPointerType;
 
-    static OPX_CONSTEXPR Float kGrowthFactor = 2.f;
-    static OPX_CONSTEXPR SizeType kInvalidIndex = OPX_INVALID_INDEX;
-    static OPX_CONSTEXPR SizeType kMaxCapacity =
-        static_cast<SizeType>(NumericLimits<SizeType>::kMax / sizeof(ElementType));
-    static OPX_CONSTEXPR SizeType kMaxGrowthCapacity =
-        static_cast<SizeType>(static_cast<Float>(kMaxCapacity) / kGrowthFactor);
+    using IteratorType = typename Base::IteratorType;
+    using ConstIteratorType = typename Base::ConstIteratorType;
 
-public:
-    Vector() noexcept : mData(nullptr), mSize(0), mCapacity(0) {}
+    using Base::kGrowthFactor;
+    using Base::kInvalidIndex;
+    using Base::kMaxCapacity;
+    using Base::kMaxGrowthCapacity;
+
+    using Base::mCapacity;
+    using Base::mData;
+    using Base::mSize;
+
+    Vector() noexcept = default;
 
     explicit Vector(SizeType num) { Init<EInitMethod::DefaultConstruct>(num, num, nullptr); }
 
@@ -97,8 +102,10 @@ public:
         Init<EInitMethod::CopyConstruct>(other.mSize, other.mSize, other.mData);
     }
 
-    Vector(Vector&& other) noexcept
-        : mData(other.mData), mSize(other.mSize), mCapacity(other.mCapacity) {
+    Vector(Vector&& other) noexcept {
+        mData = other.mData;
+        mSize = other.mSize;
+        mCapacity = other.mCapacity;
         other.mData = nullptr;
         other.mSize = 0;
         other.mCapacity = 0;
@@ -113,56 +120,16 @@ public:
         }
     }
 
-    OPX_INLINE PointerType GetData() noexcept { return mData; }
-    OPX_INLINE ConstPointerType GetData() const noexcept { return mData; }
-    OPX_INLINE SizeType GetSize() const noexcept { return mSize; }
-    OPX_INLINE SizeType GetCapacity() const noexcept { return mCapacity; }
-    OPX_INLINE Bool IsEmpty() const noexcept { return mSize == 0; }
-
-    OPX_INLINE ReferenceType operator[](SizeType index) {
-        OPX_ASSERT(index >= 0 && index < mSize);
-        return mData[index];
-    }
-
-    OPX_INLINE ConstReferenceType operator[](SizeType index) const {
-        OPX_ASSERT(index >= 0 && index < mSize);
-        return mData[index];
-    }
-
-    OPX_INLINE ReferenceType At(SizeType index) {
-        OPX_ASSERT(index >= 0 && index < mSize);
-        return mData[index];
-    }
-
-    OPX_INLINE ConstReferenceType At(SizeType index) const {
-        OPX_ASSERT(index >= 0 && index < mSize);
-        return mData[index];
-    }
-
-    OPX_INLINE ReferenceType First() {
-        OPX_ASSERT(mSize > 0);
-        return mData[0];
-    }
-
-    OPX_INLINE ConstReferenceType First() const {
-        OPX_ASSERT(mSize > 0);
-        return mData[0];
-    }
-
-    OPX_INLINE ReferenceType Last() {
-        OPX_ASSERT(mSize > 0);
-        return mData[mSize - 1];
-    }
-
-    OPX_INLINE ConstReferenceType Last() const {
-        OPX_ASSERT(mSize > 0);
-        return mData[mSize - 1];
-    }
-
-    OPX_INLINE IteratorType begin() { return IteratorType(mData); }
-    OPX_INLINE ConstIteratorType begin() const { return ConstIteratorType(mData); }
-    OPX_INLINE IteratorType end() { return IteratorType(mData + mSize); }
-    OPX_INLINE ConstIteratorType end() const { return ConstIteratorType(mData + mSize); }
+    using Base::GetCapacity;
+    using Base::GetData;
+    using Base::GetSize;
+    using Base::IsEmpty;
+    using Base::operator[];
+    using Base::At;
+    using Base::begin;
+    using Base::end;
+    using Base::First;
+    using Base::Last;
 
     void Assign(SizeType sourceSize, ConstPointerType source) {
         if (sourceSize > mCapacity) {
@@ -591,10 +558,6 @@ private:
         }
         mSize = newSize;
     }
-
-    PointerType mData;
-    SizeType mSize;
-    SizeType mCapacity;
 };
 
 OPX_NAMESPACE_END
