@@ -7,27 +7,8 @@
 
 OPX_NAMESPACE_BEGIN
 
-namespace Details {
-    template <typename T>
-    class CharTraitsBase {
-    public:
-        using CharType = T;
-
-        static const CharType* FindLastChar(const CharType* str, CharType c, SizeT n) {
-            const CharType* end = str + n;
-            while (end != str) {
-                --end;
-                if (*end == c) {
-                    return end;
-                }
-            }
-            return nullptr;
-        }
-    };
-}  // namespace Details
-
 template <typename T>
-class CharTraits : public Details::CharTraitsBase<T> {
+class CharTraits {
 public:
     using CharType = T;
 
@@ -65,75 +46,56 @@ public:
         }
         return nullptr;
     }
-};
 
-template <>
-class CharTraits<Char> : public Details::CharTraitsBase<Char> {
-public:
-    using CharType = Char;
-
-    static SizeT Length(const CharType* str) {
-#if defined(OPX_COMPILER_GCC) || defined(OPX_COMPILER_CLANG)
-        return __builtin_strlen(str);
-#else
-        return strlen(str);
-#endif
+    static const CharType* FindLastChar(const CharType* str, CharType c, SizeT n) {
+        const CharType* end = str + n;
+        while (end != str) {
+            --end;
+            if (*end == c) {
+                return end;
+            }
+        }
+        return nullptr;
     }
 
-    static Int32 Compare(const CharType* lhs, const CharType* rhs, SizeT n) {
-#if defined(OPX_COMPILER_GCC) || defined(OPX_COMPILER_CLANG)
-        return __builtin_memcmp(lhs, rhs, n);
-#else
-        return memcmp(lhs, rhs, n);
-#endif
+    static const CharType* FindSubstr(const CharType* str,
+                                      SizeT len,
+                                      const CharType* substr,
+                                      SizeT substrLen) {
+        if (substrLen > len) {
+            return nullptr;
+        }
+
+        if (substrLen == 0) {
+            return str;
+        }
+
+        for (const CharType* end = str + (len - substrLen + 1); str != end; ++str) {
+            if (*str == *substr && Compare(str, substr, substrLen) == 0) {
+                return str;
+            }
+        }
+        return nullptr;
     }
 
-    static void Fill(CharType* dest, CharType c, SizeT n) {
-#if defined(OPX_COMPILER_GCC) || defined(OPX_COMPILER_CLANG)
-        __builtin_memset(dest, c, n);
-#else
-        memset(dest, c, n);
-#endif
-    }
+    static const CharType* FindLastSubstr(const CharType* str,
+                                          SizeT len,
+                                          const CharType* substr,
+                                          SizeT substrLen) {
+        if (substrLen > len) {
+            return nullptr;
+        }
 
-    static const CharType* FindChar(const CharType* str, CharType c, SizeT n) {
-#if defined(OPX_COMPILER_GCC) || defined(OPX_COMPILER_CLANG)
-        return static_cast<const CharType*>(__builtin_memchr(str, c, n));
-#else
-        return static_cast<const CharType*>(memchr(str, c, n));
-#endif
-    }
-};
+        if (substrLen == 0) {
+            return str + len;
+        }
 
-template <>
-class CharTraits<WChar> : public Details::CharTraitsBase<WChar> {
-public:
-    using CharType = WChar;
-
-    static SizeT Length(const CharType* str) {
-#if defined(OPX_COMPILER_CLANG)
-        return __builtin_wcslen(str);
-#else
-        return wcslen(str);
-#endif
-    }
-
-    static Int32 Compare(const CharType* lhs, const CharType* rhs, SizeT n) {
-#if defined(OPX_COMPILER_CLANG)
-        return __builtin_wmemcmp(lhs, rhs, n);
-#else
-        return wmemcmp(lhs, rhs, n);
-#endif
-    }
-
-    static void Fill(CharType* dest, CharType c, SizeT n) { wmemset(dest, c, n); }
-
-    static const CharType* FindChar(const CharType* str, CharType c, SizeT n) {
-#if defined(OPX_COMPILER_CLANG)
-        return __builtin_wmemchr(str, c, n);
-#else
-        return wmemchr(str, c, n);
-#endif
+        for (const CharType* end = str + (len - substrLen); end != str; --end) {
+            if (*end == *substr && Compare(end, substr, substrLen) == 0) {
+                return end;
+            }
+        }
+        return nullptr;
     }
 };
 

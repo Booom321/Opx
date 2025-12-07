@@ -53,4 +53,40 @@ TEST_CASE(String, TEST_CASE_CHAR_TRAITS_NAME) {
         TEST_EXPECT_EQ(CharTraits::FindLastChar(s2, 'l', s2n), nullptr);
         TEST_EXPECT_EQ(CharTraits::FindLastChar(s2, 'x', s2n), nullptr);
     }
+
+    {
+        const auto testFindSubstr = [](const TEST_CHAR* str, SizeT len, const TEST_CHAR* substr,
+                                       SizeT substrLen, Opx::PtrOffsetT expectedIndex) -> Bool {
+            const auto* found = CharTraits::FindSubstr(str, len, substr, substrLen);
+            return expectedIndex < 0 ? (found == nullptr)
+                                     : (found != nullptr && found == str + expectedIndex);
+        };
+
+        const auto testFindLastSubstr = [](const TEST_CHAR* str, SizeT len, const TEST_CHAR* substr,
+                                           SizeT substrLen, Opx::PtrOffsetT expectedIndex) -> Bool {
+            const auto* found = CharTraits::FindLastSubstr(str, len, substr, substrLen);
+            return expectedIndex < 0 ? (found == nullptr)
+                                     : (found != nullptr && found == str + expectedIndex);
+        };
+
+#define TEST_FIND_SUBSTR(str, len, substr, substrLen, expectedIndex) \
+    TEST_EXPECT_TRUE(                                                \
+        testFindSubstr(TEST_TEXT(str), len, TEST_TEXT(substr), substrLen, expectedIndex));
+#define TEST_FIND_LAST_SUBSTR(str, len, substr, substrLen, expectedIndex) \
+    TEST_EXPECT_TRUE(                                                     \
+        testFindLastSubstr(TEST_TEXT(str), len, TEST_TEXT(substr), substrLen, expectedIndex));
+
+        TEST_FIND_SUBSTR("aa", 2, "aaaaa", 5, -1);
+        TEST_FIND_SUBSTR("abcdef", 4, "cd", 2, 2);
+        TEST_FIND_SUBSTR("aaaaa", 5, "bbb", 3, -1);
+        TEST_FIND_SUBSTR("aaaaa", 5, "aaaaa", 5, 0);
+        TEST_FIND_SUBSTR("aaaaa", 5, "aaaaaa", 6, -1);
+        TEST_FIND_SUBSTR("aaaaa", 5, "", 0, 0);
+        TEST_FIND_SUBSTR("aaaaa", 5, "bbb", 0, 0);
+
+        TEST_FIND_LAST_SUBSTR("aaa bbb aaa ccc", 15, "aaa", 3, 8);
+        TEST_FIND_LAST_SUBSTR("aaa bbb aaa ccc", 15, "bbb", 3, 4);
+        TEST_FIND_LAST_SUBSTR("aaa bbb aaa ccc", 15, "", 0, 15);
+        TEST_FIND_LAST_SUBSTR("aaa bbb aaa ccc", 15, "ccc", 0, 15);
+    }
 }
