@@ -4,6 +4,7 @@
 
 #include <cstring>
 #include <cwchar>
+#include <iostream>
 
 OPX_NAMESPACE_BEGIN
 
@@ -11,6 +12,30 @@ template <typename T>
 class CharTraits {
 public:
     using CharType = T;
+
+    static const CharType* Copy(CharType* dest, const CharType* src, SizeT count) {
+#if defined(OPX_COMPILER_GCC) || defined(OPX_COMPILER_CLANG)
+        return static_cast<const CharType*>(__builtin_memcpy(dest, src, count * sizeof(CharType)));
+#else
+        return static_cast<const CharType*>(memcpy(dest, src, count * sizeof(CharType)));
+#endif
+    }
+
+    static const CharType* Move(CharType* dest, const CharType* src, SizeT count) {
+        if (dest < src) {
+#if defined(OPX_COMPILER_GCC) || defined(OPX_COMPILER_CLANG)
+            return static_cast<const CharType*>(
+                __builtin_memcpy(dest, src, count * sizeof(CharType)));
+#else
+            return static_cast<const CharType*>(memcpy(dest, src, count * sizeof(CharType)));
+#endif
+        }
+#if defined(OPX_COMPILER_GCC) || defined(OPX_COMPILER_CLANG)
+        return static_cast<const CharType*>(__builtin_memmove(dest, src, count * sizeof(CharType)));
+#else
+        return static_cast<const CharType*>(memmove(dest, src, count * sizeof(CharType)));
+#endif
+    }
 
     static SizeT Length(const CharType* str) {
         const CharType* current = str;
