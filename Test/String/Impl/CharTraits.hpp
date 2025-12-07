@@ -1,15 +1,15 @@
 #pragma once
 
 #if defined(TEST_CHAR_TYPE)
-#define TEST_CASE_CHAR_TRAITS_NAME CharTraits_Char
+#define TEST_CASE_NAME CharTraits_Char
 #elif defined(TEST_WCHAR_TYPE)
-#define TEST_CASE_CHAR_TRAITS_NAME CharTraits_WChar
+#define TEST_CASE_NAME CharTraits_WChar
 #elif defined(TEST_CHAR8_TYPE)
-#define TEST_CASE_CHAR_TRAITS_NAME CharTraits_Char8
+#define TEST_CASE_NAME CharTraits_Char8
 #elif defined(TEST_CHAR16_TYPE)
-#define TEST_CASE_CHAR_TRAITS_NAME CharTraits_Char16
+#define TEST_CASE_NAME CharTraits_Char16
 #elif defined(TEST_CHAR32_TYPE)
-#define TEST_CASE_CHAR_TRAITS_NAME CharTraits_Char32
+#define TEST_CASE_NAME CharTraits_Char32
 #endif
 
 #include "Framework/TestStringMacros.hpp"
@@ -17,7 +17,7 @@
 
 #include <Opx/String/CharTraits.hpp>
 
-TEST_CASE(String, TEST_CASE_CHAR_TRAITS_NAME) {
+TEST_CASE(String, TEST_CASE_NAME) {
     using CharTraits = Opx::CharTraits<TEST_CHAR>;
 
     TEST_EXPECT_EQ(CharTraits::Length(TEST_TEXT("Hello")), 5);
