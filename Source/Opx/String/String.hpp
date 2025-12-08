@@ -98,13 +98,13 @@ private:
 
     void Init(ConstPointerType str, SizeType n) {
         OPX_ASSERT(n >= 0);
-        AllocateData(n, OPX_MAX(n, kMaxCapacity));
+        AllocateData(n, OPX_MAX(n, kInitialCapacity));
         CharTraitsType::Copy(mData, str, n);
     }
 
     void Init(SizeType n, ElementType c) {
         OPX_ASSERT(n >= 0);
-        AllocateData(n, OPX_MAX(n, kMaxCapacity));
+        AllocateData(n, OPX_MAX(n, kInitialCapacity));
         CharTraitsType::Fill(mData, c, n);
     }
 };
