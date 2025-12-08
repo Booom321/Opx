@@ -21,7 +21,7 @@ using Bool = bool;
 
 using Char = char;
 using WChar = wchar_t;
-#if defined(__cpp_char8_t)
+#if defined(OPX_HAS_CHAR8_T)
 using Char8 = char8_t;
 #endif
 using Char16 = char16_t;

@@ -233,7 +233,7 @@ struct IsIntegral : IsAnyOf<RemoveCV_T<T>,
                             bool,
                             char,
                             wchar_t,
-#if defined(__cpp_char8_t)
+#if defined(OPX_HAS_CHAR8_T)
                             char8_t,
 #endif
                             char16_t,
@@ -725,5 +725,18 @@ OPX_CONSTEXPR Bool IsNothrowDestructible_V = IsNothrowDestructible<T>::value;
 
 template <typename...>
 using Void_T = void;
+
+template <typename T>
+struct IsCharacter : IsAnyOf<RemoveCV_T<T>,
+                             Char,
+                             WChar,
+#if defined(OPX_HAS_CHAR8_T)
+                             Char8,
+#endif
+                             Char16,
+                             Char32> {
+};
+template <typename T>
+OPX_CONSTEXPR Bool IsCharacter_V = IsCharacter<T>::value;
 
 OPX_NAMESPACE_END

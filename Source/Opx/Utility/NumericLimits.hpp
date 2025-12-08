@@ -36,7 +36,7 @@ template <>
 class NumericLimits<unsigned char> : public Details::NumericLimitsImpl<unsigned char> {};
 template <>
 class NumericLimits<wchar_t> : public Details::NumericLimitsImpl<wchar_t> {};
-#if defined(__cpp_char8_t)
+#if defined(OPX_HAS_CHAR8_T)
 template <>
 class NumericLimits<char8_t> : public Details::NumericLimitsImpl<char8_t> {};
 #endif
