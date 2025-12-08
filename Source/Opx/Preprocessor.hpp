@@ -162,6 +162,10 @@
 #define OPX_FALLTHROUGH
 #endif
 
+#if defined(__cpp_char8_t)
+#define OPX_HAS_CHAR8_T 1
+#endif
+
 #if OPX_COMPILER_MSVC
 #define OPX_INLINE __forceinline
 #define OPX_NOINLINE __declspec(noinline)
