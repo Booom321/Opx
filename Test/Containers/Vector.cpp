@@ -255,7 +255,7 @@ TEST_CASE(Containers, Vector) {
         v.Append(v1);
         TEST_VECTOR(v, 10, 1, 1, 1, 1, 2, 3, 1, 2, 3, 4);
 
-        v.Append(2, v2.GetData());
+        v.Append(v2.GetData(), 2);
         TEST_VECTOR(v, 12, 1, 1, 1, 1, 2, 3, 1, 2, 3, 4, 2, 2);
     }
 
@@ -593,7 +593,7 @@ TEST_CASE(Containers, VectorWithNonTrivial) {
         v.Append(v1);
         TEST_VECTOR(v, 10, {1}, {1}, {1}, {1}, {2}, {3}, {1}, {2}, {3}, {4});
 
-        v.Append(2, v2.GetData());
+        v.Append(v2.GetData(), 2);
         TEST_VECTOR(v, 12, {1}, {1}, {1}, {1}, {2}, {3}, {1}, {2}, {3}, {4}, {2}, {2});
     }
 
