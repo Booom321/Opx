@@ -739,4 +739,25 @@ struct IsCharacter : IsAnyOf<RemoveCV_T<T>,
 template <typename T>
 OPX_CONSTEXPR Bool IsCharacter_V = IsCharacter<T>::value;
 
+namespace Details {
+    template <typename T>
+    auto TestReturnable(int) -> decltype(void(static_cast<T (*)()>(nullptr)), TrueType{});
+    template <typename>
+    auto TestReturnable(...) -> FalseType;
+
+    template <typename From, typename To>
+    auto TestImplicitlyConvertible(int)
+        -> decltype(void(std::declval<void (&)(To)>()(std::declval<From>())), TrueType{});
+    template <typename, typename>
+    auto TestImplicitlyConvertible(...) -> FalseType;
+}  // namespace Details
+
+template <typename From, typename To>
+struct IsConvertible
+    : BoolConstant<(decltype(Details::TestReturnable<To>(0))::value &&
+                    decltype(Details::TestImplicitlyConvertible<From, To>(0))::value) ||
+                   (IsVoid_V<From> && IsVoid_V<To>)> {};
+template <typename From, typename To>
+OPX_CONSTEXPR Bool IsConvertible_V = IsConvertible<From, To>::value;
+
 OPX_NAMESPACE_END
