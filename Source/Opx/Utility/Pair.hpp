@@ -19,19 +19,18 @@ struct Pair {
     template <typename F1 = F,
               typename S1 = S,
               typename = EnableIf_T<IsCopyConstructible_V<F1> && IsCopyConstructible_V<S1>>>
-    OPX_CONSTEXPR Pair(const F1& first, const S1& second) : first(first), second(second) {}
+    OPX_CONSTEXPR Pair(const F& f, const S& s) : first(f), second(s) {}
 
     template <typename F1 = F,
               typename S1 = S,
               typename = EnableIf_T<IsConstructible_V<F, F1> && IsConstructible_V<S, S1>>>
-    OPX_CONSTEXPR Pair(F1&& first, S1&& second)
-        : first(Forward<F1>(first)), second(Forward<S1>(second)) {}
+    OPX_CONSTEXPR Pair(F1&& f, S1&& s) : first(Forward<F1>(f)), second(Forward<S1>(s)) {}
 
     template <typename S1 = S, typename = EnableIf_T<IsConstructible_V<S, S1>>>
-    OPX_CONSTEXPR Pair(const F& first, S1&& second) : first(first), second(Forward<S1>(second)) {}
+    OPX_CONSTEXPR Pair(const F& f, S1&& s) : first(f), second(Forward<S1>(s)) {}
 
     template <typename F1 = F, typename = EnableIf_T<IsConstructible_V<F, F1>>>
-    OPX_CONSTEXPR Pair(F1&& first, const S& second) : first(Forward<F1>(first)), second(second) {}
+    OPX_CONSTEXPR Pair(F1&& f, const S& s) : first(Forward<F1>(f)), second(s) {}
 
     template <
         typename F1 = F,
@@ -86,17 +85,17 @@ struct Pair {
 };
 
 template <typename F, typename S>
-OPX_INLINE Bool operator==(const Pair<F, S>& lhs, const Pair<F, S>& rhs) {
+OPX_CONSTEXPR Bool operator==(const Pair<F, S>& lhs, const Pair<F, S>& rhs) {
     return lhs.first == rhs.first && lhs.second == rhs.second;
 }
 
 template <typename F, typename S>
-OPX_INLINE Bool operator!=(const Pair<F, S>& lhs, const Pair<F, S>& rhs) {
+OPX_CONSTEXPR Bool operator!=(const Pair<F, S>& lhs, const Pair<F, S>& rhs) {
     return lhs.first != rhs.first || lhs.second != rhs.second;
 }
 
 template <typename F, typename S>
-Pair<F, S> MakePair(F&& first, S&& second) {
+OPX_CONSTEXPR Pair<F, S> MakePair(F&& first, S&& second) {
     return Pair<F, S>(Forward<F>(first), Forward<S>(second));
 }
 
