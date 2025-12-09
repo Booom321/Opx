@@ -251,37 +251,43 @@ public:
         return item;
     }
 
-    OPX_INLINE void Append(SizeType count, ConstReferenceType item) {
-        AppendImpl<ConstReferenceType, decltype(Memory::FillConstructItems<ElementType, SizeType>),
-                   Memory::FillConstructItems<ElementType, SizeType>>(count, item);
+    OPX_INLINE Vector& Append(SizeType n, ConstReferenceType item) {
+        return AppendImpl<ConstReferenceType,
+                          decltype(Memory::FillConstructItems<ElementType, SizeType>),
+                          Memory::FillConstructItems<ElementType, SizeType>>(n, item);
     }
 
-    OPX_INLINE void Append(SizeType count, ConstPointerType items) {
-        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>),
-                   Memory::CopyConstructItems<ElementType, SizeType>>(count, items);
+    OPX_INLINE Vector& Append(ConstPointerType items, SizeType n) {
+        return AppendImpl<ConstPointerType,
+                          decltype(Memory::CopyConstructItems<ElementType, SizeType>),
+                          Memory::CopyConstructItems<ElementType, SizeType>>(n, items);
     }
 
-    OPX_INLINE void Append(const Vector& other) {
-        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>),
-                   Memory::CopyConstructItems<ElementType, SizeType>>(other.mSize, other.mData);
+    OPX_INLINE Vector& Append(const Vector& other) {
+        return AppendImpl<ConstPointerType,
+                          decltype(Memory::CopyConstructItems<ElementType, SizeType>),
+                          Memory::CopyConstructItems<ElementType, SizeType>>(other.mSize,
+                                                                             other.mData);
     }
-    OPX_INLINE void Append(std::initializer_list<ElementType> list) {
-        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>),
-                   Memory::CopyConstructItems<ElementType, SizeType>>(
+    OPX_INLINE Vector& Append(std::initializer_list<ElementType> list) {
+        return AppendImpl<ConstPointerType,
+                          decltype(Memory::CopyConstructItems<ElementType, SizeType>),
+                          Memory::CopyConstructItems<ElementType, SizeType>>(
             static_cast<SizeType>(list.size()), list.begin());
     }
 
     OPX_INLINE Vector& operator+=(const Vector& other) {
-        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>),
-                   Memory::CopyConstructItems<ElementType, SizeType>>(other.mSize, other.mData);
-        return *this;
+        return AppendImpl<ConstPointerType,
+                          decltype(Memory::CopyConstructItems<ElementType, SizeType>),
+                          Memory::CopyConstructItems<ElementType, SizeType>>(other.mSize,
+                                                                             other.mData);
     }
 
     OPX_INLINE Vector& operator+=(std::initializer_list<ElementType> list) {
-        AppendImpl<ConstPointerType, decltype(Memory::CopyConstructItems<ElementType, SizeType>),
-                   Memory::CopyConstructItems<ElementType, SizeType>>(
+        return AppendImpl<ConstPointerType,
+                          decltype(Memory::CopyConstructItems<ElementType, SizeType>),
+                          Memory::CopyConstructItems<ElementType, SizeType>>(
             static_cast<SizeType>(list.size()), list.begin());
-        return *this;
     }
 
     template <typename... ArgTypes>
@@ -487,7 +493,7 @@ private:
     }
 
     template <typename ValueType, typename Fn, Fn FUNC>
-    void AppendImpl(SizeType count, ValueType value) {
+    Vector& AppendImpl(SizeType count, ValueType value) {
         OPX_ASSERT(count >= 0);
         if (mCapacity - mSize <= count) {
             auto newData = BeginReallocate(GetNewCapacity(count));
@@ -498,6 +504,7 @@ private:
             FUNC(mData + mSize, value, count);
         }
         mSize += count;
+        return *this;
     }
 
     template <typename ValueType, typename ConstructFn, typename AssignFn>
