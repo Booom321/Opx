@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <new>
 
 #include "../Utility/Utility.hpp"
 
