@@ -26,12 +26,6 @@ struct Pair {
               typename = EnableIf_T<IsConstructible_V<F, F1> && IsConstructible_V<S, S1>>>
     OPX_CONSTEXPR Pair(F1&& f, S1&& s) : first(Forward<F1>(f)), second(Forward<S1>(s)) {}
 
-    template <typename S1 = S, typename = EnableIf_T<IsConstructible_V<S, S1>>>
-    OPX_CONSTEXPR Pair(const F& f, S1&& s) : first(f), second(Forward<S1>(s)) {}
-
-    template <typename F1 = F, typename = EnableIf_T<IsConstructible_V<F, F1>>>
-    OPX_CONSTEXPR Pair(F1&& f, const S& s) : first(Forward<F1>(f)), second(s) {}
-
     template <
         typename F1,
         typename S1,
