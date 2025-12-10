@@ -44,4 +44,8 @@ TEST_CASE(Utility, Pair) {
     Pair<int, int> p04{2, 3};
     TEST_EXPECT_EQ(p02, p03);
     TEST_EXPECT_NEQ(p01, p04);
+
+    Pair<std::string_view, std::string_view> p05{Pair<std::string, const char*>{"hello", "world"}};
+    TEST_EXPECT_STR_EQ(p05.first.data(), "hello");
+    TEST_EXPECT_STR_EQ(p05.second.data(), "world");
 }
