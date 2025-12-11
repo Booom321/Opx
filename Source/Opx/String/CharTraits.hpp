@@ -12,6 +12,12 @@ public:
 
     using CharType = T;
 
+    static OPX_CONSTEXPR Bool IsWhitespace(CharType c) {
+        return c == static_cast<T>(0x20) || c == static_cast<T>(0x0c) ||
+               c == static_cast<T>(0x0a) || c == static_cast<T>(0x0d) ||
+               c == static_cast<T>(0x09) || c == static_cast<T>(0x0b);
+    }
+
     static const CharType* Copy(CharType* dest, const CharType* src, SizeT count);
     static const CharType* Move(CharType* dest, const CharType* src, SizeT count);
     static SizeT Length(const CharType* str);

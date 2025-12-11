@@ -372,15 +372,7 @@ public:
         return Vector((num < 0 || num >= mSize - start) ? mSize - start : num, mData + start);
     }
 
-    void Reverse() {
-        for (SizeType i = 0, j = mSize - 1,
-                      count = static_cast<SizeType>(static_cast<Float>(mSize) * .5f);
-             i < count; ++i, --j) {
-            ElementType Temp = mData[i];
-            mData[i] = mData[j];
-            mData[j] = Temp;
-        }
-    }
+    using Base::Reverse;
 
 private:
     explicit Vector(SizeType capacity, Bool) { Init<EInitMethod::None>(0, capacity, nullptr); }
@@ -477,17 +469,15 @@ private:
 
     SizeType GetNewCapacity(SizeType numItemsToAdd = 1) const {
         if (mCapacity > 0) {
-            if (numItemsToAdd < kMaxCapacity - mCapacity) {
-                if (mCapacity < kMaxGrowthCapacity) {
-                    const SizeType newCapacityA = mCapacity + numItemsToAdd;
-                    const auto newCapacityB =
-                        static_cast<SizeType>(static_cast<Float>(mCapacity) * kGrowthFactor);
-                    return OPX_MAX(newCapacityA, newCapacityB);
-                }
-                return mCapacity + numItemsToAdd;
-            } else {
-                OPX_ASSERT_MSG(false, "The size of Vector<T> is too large");
+            OPX_ASSERT_MSG(numItemsToAdd < kMaxCapacity - mCapacity,
+                           "The size of Vector<T> is too large");
+            if (mCapacity < kMaxGrowthCapacity) {
+                const SizeType newCapacityA = mCapacity + numItemsToAdd;
+                const auto newCapacityB =
+                    static_cast<SizeType>(static_cast<Float>(mCapacity) * kGrowthFactor);
+                return OPX_MAX(newCapacityA, newCapacityB);
             }
+            return mCapacity + numItemsToAdd;
         }
         return OPX_MAX(numItemsToAdd, 8);
     }
