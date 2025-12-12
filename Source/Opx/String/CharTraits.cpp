@@ -120,7 +120,7 @@ const typename CharTraits<T>::CharType* CharTraits<T>::FindLastSubstr(const Char
         return str + len;
     }
 
-    for (const CharType* end = str + (len - substrLen); end != str; --end) {
+    for (const CharType* end = str + len; end != str; --end) {
         if (*end == *substr && Compare(end, substr, substrLen) == 0) {
             return end;
         }
