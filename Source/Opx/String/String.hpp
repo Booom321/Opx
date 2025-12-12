@@ -265,6 +265,83 @@ public:
         return Move(str);
     }
 
+    SizeType Find(ElementType c, SizeType start = 0) const;
+    SizeType Find(ConstPointerType str, SizeType start = 0) const;
+    SizeType Find(const BasicString& str, SizeType start = 0) const;
+    SizeType Find(ConstPointerType str, SizeType pos, SizeType n, SizeType start = 0) const;
+
+    SizeType FindLast(ElementType c, SizeType start = kInvalidIndex) const;
+    SizeType FindLast(ConstPointerType str, SizeType start = kInvalidIndex) const;
+    SizeType FindLast(const BasicString& str, SizeType start = kInvalidIndex) const;
+    SizeType FindLast(ConstPointerType str,
+                      SizeType pos,
+                      SizeType n,
+                      SizeType start = kInvalidIndex) const;
+
+    SizeType FindFirstOf(ElementType c, SizeType start = 0) const;
+    SizeType FindFirstOf(ConstPointerType str, SizeType start = 0) const;
+    SizeType FindFirstOf(const BasicString& str, SizeType start = 0) const;
+    SizeType FindFirstOf(ConstPointerType str, SizeType pos, SizeType n, SizeType start = 0) const;
+
+    SizeType FindFirstNotOf(ElementType c, SizeType start = 0) const;
+    SizeType FindFirstNotOf(ConstPointerType str, SizeType start = 0) const;
+    SizeType FindFirstNotOf(const BasicString& str, SizeType start = 0) const;
+    SizeType FindFirstNotOf(ConstPointerType str,
+                            SizeType pos,
+                            SizeType n,
+                            SizeType start = 0) const;
+
+    SizeType FindLastOf(ElementType c, SizeType start = kInvalidIndex) const;
+    SizeType FindLastOf(ConstPointerType str, SizeType start = kInvalidIndex) const;
+    SizeType FindLastOf(const BasicString& str, SizeType start = kInvalidIndex) const;
+    SizeType FindLastOf(ConstPointerType str,
+                        SizeType pos,
+                        SizeType n,
+                        SizeType start = kInvalidIndex) const;
+
+    SizeType FindLastNotOf(ElementType c, SizeType start = kInvalidIndex) const;
+    SizeType FindLastNotOf(ConstPointerType str, SizeType start = kInvalidIndex) const;
+    SizeType FindLastNotOf(const BasicString& str, SizeType start = kInvalidIndex) const;
+    SizeType FindLastNotOf(ConstPointerType str,
+                           SizeType pos,
+                           SizeType n,
+                           SizeType start = kInvalidIndex) const;
+
+    SizeType Count(ElementType c, SizeType start = 0) const;
+    SizeType Count(ConstPointerType str, SizeType start = 0) const;
+    SizeType Count(const BasicString& str, SizeType start = 0) const;
+    SizeType Count(ConstPointerType str, SizeType strLen, SizeType start = 0) const;
+
+    /*void Replace(SizeType thisPos, SizeType thisN, const BasicString& str, SizeType start = 0);
+    void Replace(SizeType thisPos, SizeType thisN, ConstPointerType str, SizeType start = 0);
+    void Replace(SizeType thisPos,
+                 SizeType thisN,
+                 ConstPointerType str,
+                 SizeType strLen,
+                 SizeType start = 0);
+
+    void Replace(ConstPointerType oldStr, ConstPointerType newStr, SizeType start = 0);
+    void Replace(const BasicString& oldStr, const BasicString& newStr, SizeType start = 0);
+    void Replace(ConstPointerType oldStr, const BasicString& newStr, SizeType start = 0);
+    void Replace(const BasicString& oldStr, ConstPointerType newStr, SizeType start = 0);
+
+    void ReplaceN(ConstPointerType oldStr,
+                  ConstPointerType newStr,
+                  SizeType limit,
+                  SizeType start = 0);
+    void ReplaceN(const BasicString& oldStr,
+                  const BasicString& newStr,
+                  SizeType limit,
+                  SizeType start = 0);
+    void ReplaceN(ConstPointerType oldStr,
+                  const BasicString& newStr,
+                  SizeType limit,
+                  SizeType start = 0);
+    void ReplaceN(const BasicString& oldStr,
+                  ConstPointerType newStr,
+                  SizeType limit,
+                  SizeType start = 0);*/
+
 private:
     void AllocateData(SizeType size, SizeType capacity);
     void Init(ConstPointerType str, SizeType n);
@@ -521,6 +598,318 @@ template <typename T>
 OPX_INLINE BasicString<T>& BasicString<T>::operator*=(SizeType n) {
     return Repeat(n);
 }
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::Find(ElementType c, SizeType start) const {
+    if (mSize == 0 || start >= mSize) {
+        return kInvalidIndex;
+    }
+    start = (start < 0) ? 0 : start;
+    const auto result =
+        CharTraitsType::FindChar(mData + start, c, static_cast<SizeT>(mSize - start));
+    return result ? static_cast<SizeType>(result - mData) : kInvalidIndex;
+}
+
+template <typename T>
+OPX_INLINE typename BasicString<T>::SizeType BasicString<T>::Find(ConstPointerType str,
+                                                                  SizeType start) const {
+    return Find(str, 0, static_cast<SizeType>(CharTraitsType::Length(str)), start);
+}
+
+template <typename T>
+OPX_INLINE typename BasicString<T>::SizeType BasicString<T>::Find(const BasicString& str,
+                                                                  SizeType start) const {
+    return Find(str.mData, 0, str.mSize, start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::Find(ConstPointerType str,
+                                                       SizeType pos,
+                                                       SizeType n,
+                                                       SizeType start) const {
+    OPX_ASSERT(pos >= 0 && n >= 0);
+    if (n > mSize - start) {
+        return kInvalidIndex;
+    }
+    start = (start < 0) ? 0 : start;
+    const auto result = CharTraitsType::FindSubstr(mData + start, static_cast<SizeT>(mSize - start),
+                                                   str + pos, static_cast<SizeT>(n));
+    return result ? static_cast<SizeType>(result - mData) : kInvalidIndex;
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindLast(ElementType c, SizeType start) const {
+    start = (start >= mSize || start == kInvalidIndex) ? mSize - 1 : start;
+    if (mSize == 0 || start < -1) {
+        return kInvalidIndex;
+    }
+    const auto result = CharTraitsType::FindLastChar(mData, c, static_cast<SizeT>(start));
+    return result ? static_cast<SizeType>(result - mData) : kInvalidIndex;
+}
+
+template <typename T>
+OPX_INLINE typename BasicString<T>::SizeType BasicString<T>::FindLast(ConstPointerType str,
+                                                                      SizeType start) const {
+    return FindLast(str, 0, static_cast<SizeType>(CharTraitsType::Length(str)), start);
+}
+
+template <typename T>
+OPX_INLINE typename BasicString<T>::SizeType BasicString<T>::FindLast(const BasicString& str,
+                                                                      SizeType start) const {
+    return FindLast(str.mData, 0, str.mSize, start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindLast(ConstPointerType str,
+                                                           SizeType pos,
+                                                           SizeType n,
+                                                           SizeType start) const {
+    OPX_ASSERT(pos >= 0 && n >= 0);
+
+    if (start >= mSize || start == kInvalidIndex) {
+        start = mSize > n ? mSize - n : 0;
+    } else if (start < 0) {
+        return kInvalidIndex;
+    }
+
+    const auto result = CharTraitsType::FindLastSubstr(mData, static_cast<SizeT>(start), str + pos,
+                                                       static_cast<SizeT>(n));
+    return result ? static_cast<SizeType>(result - mData) : kInvalidIndex;
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindFirstOf(ElementType c, SizeType start) const {
+    return Find(c, start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindFirstOf(ConstPointerType str,
+                                                              SizeType start) const {
+    return FindFirstOf(str, 0, static_cast<SizeType>(CharTraitsType::Length(str)), start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindFirstOf(const BasicString& str,
+                                                              SizeType start) const {
+    return FindFirstOf(str.mData, 0, str.mSize, start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindFirstOf(ConstPointerType str,
+                                                              SizeType pos,
+                                                              SizeType n,
+                                                              SizeType start) const {
+    OPX_ASSERT(pos >= 0 && n >= 0);
+    const auto strPos = str + pos;
+    for (auto i = (start < 0) ? 0 : start; i < mSize; ++i) {
+        if (CharTraitsType::FindChar(strPos, mData[i], static_cast<SizeT>(n))) {
+            return i;
+        }
+    }
+    return kInvalidIndex;
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindFirstNotOf(ElementType c,
+                                                                 SizeType start) const {
+    for (auto i = (start < 0) ? 0 : start; i < mSize; ++i) {
+        if (mData[i] != c) {
+            return i;
+        }
+    }
+    return kInvalidIndex;
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindFirstNotOf(ConstPointerType str,
+                                                                 SizeType start) const {
+    return FindFirstNotOf(str, 0, static_cast<SizeType>(CharTraitsType::Length(str)), start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindFirstNotOf(const BasicString& str,
+                                                                 SizeType start) const {
+    return FindFirstNotOf(str.mData, 0, str.mSize, start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindFirstNotOf(ConstPointerType str,
+                                                                 SizeType pos,
+                                                                 SizeType n,
+                                                                 SizeType start) const {
+    OPX_ASSERT(pos >= 0 && n >= 0);
+    const auto strPos = str + pos;
+    for (auto i = (start < 0) ? 0 : start; i < mSize; ++i) {
+        if (CharTraitsType::FindChar(strPos, mData[i], static_cast<SizeT>(n)) == nullptr) {
+            return i;
+        }
+    }
+    return kInvalidIndex;
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindLastOf(ElementType c, SizeType start) const {
+    return FindLast(c, start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindLastOf(ConstPointerType str,
+                                                             SizeType start) const {
+    return FindLastOf(str, 0, static_cast<SizeType>(CharTraitsType::Length(str)), start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindLastOf(const BasicString& str,
+                                                             SizeType start) const {
+    return FindLastOf(str.mData, 0, str.mSize, start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindLastOf(ConstPointerType str,
+                                                             SizeType pos,
+                                                             SizeType n,
+                                                             SizeType start) const {
+    OPX_ASSERT(pos >= 0 && n >= 0);
+    const auto strPos = str + pos;
+    for (auto i = (start >= mSize || start == kInvalidIndex) ? mSize - 1 : start; i >= 0; --i) {
+        if (CharTraitsType::FindChar(strPos, mData[i], static_cast<SizeT>(n))) {
+            return i;
+        }
+    }
+    return kInvalidIndex;
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindLastNotOf(ElementType c,
+                                                                SizeType start) const {
+    for (auto i = (start >= mSize || start == kInvalidIndex) ? mSize - 1 : start; i >= 0; --i) {
+        if (mData[i] != c) {
+            return i;
+        }
+    }
+    return kInvalidIndex;
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindLastNotOf(ConstPointerType str,
+                                                                SizeType start) const {
+    return FindLastNotOf(str, 0, static_cast<SizeType>(CharTraitsType::Length(str)), start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindLastNotOf(const BasicString& str,
+                                                                SizeType start) const {
+    return FindLastNotOf(str.mData, 0, str.mSize, start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::FindLastNotOf(ConstPointerType str,
+                                                                SizeType pos,
+                                                                SizeType n,
+                                                                SizeType start) const {
+    OPX_ASSERT(pos >= 0 && n >= 0);
+    const auto strPos = str + pos;
+    for (auto i = (start >= mSize || start == kInvalidIndex) ? mSize - 1 : start; i >= 0; --i) {
+        if (CharTraitsType::FindChar(strPos, mData[i], static_cast<SizeT>(n)) == nullptr) {
+            return i;
+        }
+    }
+    return kInvalidIndex;
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::Count(ElementType c, SizeType start) const {
+    start = (start < 0) ? 0 : start;
+    SizeType result = 0;
+    for (auto i = start; i < mSize; ++i) {
+        if (mData[i] == c) {
+            ++result;
+        }
+    }
+    return result;
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::Count(ConstPointerType str,
+                                                        SizeType start) const {
+    return Count(str, static_cast<SizeType>(CharTraitsType::Length(str)), start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::Count(const BasicString& str,
+                                                        SizeType start) const {
+    return Count(str.mData, str.mSize, start);
+}
+
+template <typename T>
+typename BasicString<T>::SizeType BasicString<T>::Count(ConstPointerType str,
+                                                        SizeType strLen,
+                                                        SizeType start) const {
+    if (strLen == 0) {
+        return (mSize - start) + 1;
+    }
+
+    start = (start < 0) ? 0 : start;
+    SizeType result = 0;
+    for (auto i = start; i + strLen <= mSize;) {
+        if (CharTraitsType::Compare(str, mData + i, static_cast<SizeT>(strLen)) == 0) {
+            result += 1;
+            i += strLen;
+        } else {
+            ++i;
+        }
+    }
+    return result;
+}
+
+/*template <typename T>
+void BasicString<T>::Replace(SizeType thisPos,
+                             SizeType thisN,
+                             const BasicString& str,
+                             SizeType start) {}
+
+template <typename T>
+void BasicString<T>::Replace(SizeType thisPos,
+                             SizeType thisN,
+                             ConstPointerType str,
+                             SizeType start) {}
+template <typename T>
+void BasicString<T>::Replace(SizeType thisPos,
+                             SizeType thisN,
+                             ConstPointerType str,
+                             SizeType strLen,
+                             SizeType start) {}
+
+template <typename T>
+void BasicString<T>::Replace(ConstPointerType oldStr, ConstPointerType newStr, SizeType start) {}
+template <typename T>
+void BasicString<T>::Replace(const BasicString& oldStr, const BasicString& newStr, SizeType start) {
+}
+template <typename T>
+void BasicString<T>::Replace(ConstPointerType oldStr, const BasicString& newStr, SizeType start) {}
+template <typename T>
+void BasicString<T>::Replace(const BasicString& oldStr, ConstPointerType newStr, SizeType start) {}
+
+template <typename T>
+void BasicString<T>::ReplaceN(ConstPointerType oldStr,
+                              ConstPointerType newStr,
+                              SizeType limit,
+                              SizeType start) {}
+template <typename T>
+void BasicString<T>::ReplaceN(const BasicString& oldStr,
+                              const BasicString& newStr,
+                              SizeType limit,
+                              SizeType start) {}
+template <typename T>
+void BasicString<T>::ReplaceN(ConstPointerType oldStr,
+                              const BasicString& newStr,
+                              SizeType limit,
+                              SizeType start) {}
+template <typename T>
+void BasicString<T>::ReplaceN(const BasicString& oldStr,
+                              ConstPointerType newStr,
+                              SizeType limit,
+                              SizeType start) {}*/
 
 using String = BasicString<Char>;
 using WString = BasicString<WChar>;

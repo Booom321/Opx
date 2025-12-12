@@ -77,10 +77,13 @@ const typename CharTraits<T>::CharType* CharTraits<T>::FindLastChar(const CharTy
                                                                     CharType c,
                                                                     SizeT n) {
     const CharType* end = str + n;
-    while (end != str) {
-        --end;
+    for (;; --end) {
         if (*end == c) {
             return end;
+        }
+
+        if (end == str) {
+            break;
         }
     }
     return nullptr;

@@ -567,4 +567,385 @@ TEST_CASE(String, TEST_CASE_NAME) {
             TEST_STRING(digits, "01234567", 8);
         }
     }
+
+#define TEST_FIND(s, str, pos, expectedPos) TEST_EXPECT_EQ(s.Find(TEST_TEXT(str), pos), expectedPos)
+#define TEST_FIND_LAST(s, str, pos, expectedPos) \
+    TEST_EXPECT_EQ(s.FindLast(TEST_TEXT(str), pos), expectedPos)
+
+    TEST_COMMENT("Find");
+    {
+        const String text{TEST_TEXT("dog")};
+        const String s{TEST_TEXT("I think Ruth's dog is cuter than your dog!")};
+
+        TEST_FIND(s, 'n', 0, 5);
+        TEST_FIND(s, 'n', 9, 31);
+        TEST_FIND(s, 'n', -1, 5);
+        TEST_FIND(s, 'n', 50, -1);
+
+        TEST_FIND(s, 'x', 0, -1);
+        TEST_FIND(s, 'x', 50, -1);
+        TEST_FIND(s, 'x', -1, -1);
+
+        TEST_FIND(s, '\0', 0, -1);
+        TEST_FIND(s, '\0', 50, -1);
+        TEST_FIND(s, '\0', -1, -1);
+
+        TEST_FIND(s, "dog", 0, 15);
+        TEST_FIND(s, "dog", 16, 38);
+        TEST_FIND(s, "dog", -4, 15);
+        TEST_FIND(s, "dog", 50, -1);
+
+        TEST_FIND(s, "not exist", 0, -1);
+        TEST_FIND(s, "not exist", 5, -1);
+        TEST_FIND(s, "not exist", 50, -1);
+        TEST_FIND(s, "not exist", -1, -1);
+
+        TEST_FIND(s, "", 0, 0);
+        TEST_FIND(s, "", -5, 0);
+        TEST_FIND(s, "", 100, -1);
+
+        TEST_EXPECT_EQ(s.Find(text, 0), 15);
+        TEST_EXPECT_EQ(s.Find(text, 16), 38);
+        TEST_EXPECT_EQ(s.Find(text, -4), 15);
+        TEST_EXPECT_EQ(s.Find(text, 50), -1);
+
+        TEST_EXPECT_EQ(s.Find(TEST_TEXT("your dog is cute"), 0, 4), 33);
+        TEST_EXPECT_EQ(s.Find(TEST_TEXT("your dog is cute"), 5, 3, 20), 38);
+        TEST_EXPECT_EQ(s.Find(TEST_TEXT("your dog is cute"), 0, 8, -1), 33);
+        TEST_EXPECT_EQ(s.Find(TEST_TEXT("your dog is cute"), 0, 8, 50), -1);
+        TEST_EXPECT_EQ(s.Find(TEST_TEXT("not exist"), 0, 9, 0), -1);
+
+        String empty;
+        TEST_FIND(empty, "", 0, 0);
+        TEST_FIND(empty, "", -3, 0);
+        TEST_FIND(empty, "", 5, -1);
+
+        TEST_FIND(empty, '\0', 0, -1);
+        TEST_FIND(empty, 'a', 0, -1);
+        TEST_FIND(empty, "hello", 0, -1);
+    }
+
+    TEST_COMMENT("FindLast");
+    {
+        const String text{TEST_TEXT("dog")};
+        const String s{TEST_TEXT("I think Ruth's dog is cuter than your dog!")};
+
+        TEST_FIND_LAST(s, 'n', String::kInvalidIndex, 31);
+        TEST_FIND_LAST(s, 'n', 6, 5);
+        TEST_FIND_LAST(s, 'n', -3, -1);
+        TEST_FIND_LAST(s, 'n', 50, 31);
+        TEST_FIND_LAST(s, 'n', 2, -1);
+
+        TEST_FIND_LAST(s, 'x', String::kInvalidIndex, -1);
+        TEST_FIND_LAST(s, 'x', 6, -1);
+        TEST_FIND_LAST(s, 'x', -4, -1);
+        TEST_FIND_LAST(s, 'x', 50, -1);
+
+        TEST_FIND_LAST(s, '\0', String::kInvalidIndex, -1);
+        TEST_FIND_LAST(s, '\0', 50, -1);
+        TEST_FIND_LAST(s, '\0', -4, -1);
+        TEST_FIND_LAST(s, '\0', 4, -1);
+
+        TEST_FIND_LAST(s, "dog", String::kInvalidIndex, 38);
+        TEST_FIND_LAST(s, "dog", 16, 15);
+        TEST_FIND_LAST(s, "dog", 18, 15);
+        TEST_FIND_LAST(s, "dog", -4, -1);
+        TEST_FIND_LAST(s, "dog", 7, -1);
+        TEST_FIND_LAST(s, "dog", 50, 38);
+
+        TEST_FIND_LAST(s, "not exist", String::kInvalidIndex, -1);
+        TEST_FIND_LAST(s, "not exist", 5, -1);
+        TEST_FIND_LAST(s, "not exist", 50, -1);
+        TEST_FIND_LAST(s, "not exist", -4, -1);
+
+        TEST_FIND_LAST(s, "", String::kInvalidIndex, s.GetSize());
+        TEST_FIND_LAST(s, "", -5, -1);
+        TEST_FIND_LAST(s, "", 15, 15);
+        TEST_FIND_LAST(s, "", 100, s.GetSize());
+
+        TEST_EXPECT_EQ(s.FindLast(text), 38);
+        TEST_EXPECT_EQ(s.FindLast(text, 16), 15);
+        TEST_EXPECT_EQ(s.FindLast(text, 18), 15);
+        TEST_EXPECT_EQ(s.FindLast(text, -4), -1);
+        TEST_EXPECT_EQ(s.FindLast(text, 5), -1);
+
+        TEST_EXPECT_EQ(s.FindLast(TEST_TEXT("your dog is cute"), 0, 4), 33);
+        TEST_EXPECT_EQ(s.FindLast(TEST_TEXT("your dog is cute"), 5, 3, 17), 15);
+        TEST_EXPECT_EQ(s.FindLast(TEST_TEXT("your dog is cute"), 0, 8), 33);
+        TEST_EXPECT_EQ(s.FindLast(TEST_TEXT("your dog is cute"), 0, 8, -3), -1);
+        TEST_EXPECT_EQ(s.FindLast(TEST_TEXT("your dog is cute"), 0, 8, 50), 33);
+        TEST_EXPECT_EQ(s.FindLast(TEST_TEXT("not exist"), 0, 9, 0), -1);
+
+        String empty;
+        TEST_FIND_LAST(empty, "", 0, 0);
+        TEST_FIND_LAST(empty, "", -3, -1);
+        TEST_FIND_LAST(empty, "", 5, 0);
+
+        TEST_FIND_LAST(empty, '\0', 0, -1);
+        TEST_FIND_LAST(empty, 'a', 0, -1);
+        TEST_FIND_LAST(empty, "hello", 0, -1);
+    }
+
+    TEST_COMMENT("FindFirstOf");
+    {
+#define TEST_FIND_FIRST_OF(s1, s2, start, expectedPos) \
+    TEST_EXPECT_EQ(String{TEST_TEXT(s1)}.FindFirstOf(TEST_TEXT(s2), start), expectedPos)
+
+        TEST_FIND_FIRST_OF("abcdef", 'b', 0, 1);
+        TEST_FIND_FIRST_OF("abcdef", "x", 0, -1);
+        TEST_FIND_FIRST_OF("abcdef", "c", 0, 2);
+        TEST_FIND_FIRST_OF("abcdef", "cf", 0, 2);
+        TEST_FIND_FIRST_OF("abcdef", "dfc", 0, 2);
+        TEST_FIND_FIRST_OF("abcdef", "bdefc", 0, 1);
+
+        TEST_FIND_FIRST_OF("", 'a', 0, -1);
+        TEST_FIND_FIRST_OF("", "", 0, -1);
+        TEST_FIND_FIRST_OF("", "abcdef", 0, -1);
+        TEST_FIND_FIRST_OF("abc", "", 0, -1);
+
+        TEST_FIND_FIRST_OF("aaaaa", "a", 0, 0);
+        TEST_FIND_FIRST_OF("aaaaa", "aa", 0, 0);
+        TEST_FIND_FIRST_OF("baaaaa", "aaa", 0, 1);
+        TEST_FIND_FIRST_OF("xyz", "zzz", 0, 2);
+
+        TEST_FIND_FIRST_OF("abcde", "bd", 0, 1);
+        TEST_FIND_FIRST_OF("abcde", "cbd", 1, 1);
+        TEST_FIND_FIRST_OF("abcde", "bed", 2, 3);
+        TEST_FIND_FIRST_OF("abcde", "bd", 4, -1);
+        TEST_FIND_FIRST_OF("abcde", "cb", 100, -1);
+        TEST_FIND_FIRST_OF("abcde", "ceb", -4, 1);
+
+        TEST_FIND_FIRST_OF("hello", "xyz", 0, -1);
+        TEST_FIND_FIRST_OF("12345", "abc", 0, -1);
+
+        {
+            String s(TEST_TEXT("ab\0cd"), 5);
+            String n1(TEST_TEXT("\0"), 1);
+            TEST_EXPECT_EQ(s.FindFirstOf(n1), 2);
+
+            String n2(TEST_TEXT("d\0"), 2);
+            TEST_EXPECT_EQ(s.FindFirstOf(n2), 2);
+        }
+        {
+            String ctl(TEST_TEXT("a\tb\nc\r"));
+            TEST_EXPECT_EQ(ctl.FindFirstOf(TEST_TEXT("\n")), 3);
+            TEST_EXPECT_EQ(ctl.FindFirstOf(TEST_TEXT("\r\t")), 1);
+            TEST_EXPECT_EQ(ctl.FindFirstOf(TEST_TEXT("\r"), 4), 5);
+        }
+        TEST_FIND_FIRST_OF("abc", "abc", 0, 0);
+        TEST_FIND_FIRST_OF("abc", "bca", 0, 0);
+        TEST_FIND_FIRST_OF("abc", "zzz", 0, -1);
+    }
+
+    TEST_COMMENT("FindFirstNotOf");
+    {
+#define TEST_FIND_FIRST_NOT_OF(s1, s2, start, expectedPos) \
+    TEST_EXPECT_EQ(String{TEST_TEXT(s1)}.FindFirstNotOf(TEST_TEXT(s2), start), expectedPos)
+
+        TEST_FIND_FIRST_NOT_OF("abcdef", 'f', 0, 0);
+        TEST_FIND_FIRST_NOT_OF("abcdef", 'a', 0, 1);
+        TEST_FIND_FIRST_NOT_OF("", 'a', 0, -1);
+
+        TEST_FIND_FIRST_NOT_OF("abcdef", "abc", 0, 3);
+        TEST_FIND_FIRST_NOT_OF("abcdef", "xyz", 0, 0);
+        TEST_FIND_FIRST_NOT_OF("abcdef", "abcd", 0, 4);
+
+        TEST_FIND_FIRST_NOT_OF("", "", 0, -1);
+        TEST_FIND_FIRST_NOT_OF("", "abc", 0, -1);
+
+        TEST_FIND_FIRST_NOT_OF("abc", "", 0, 0);
+        TEST_FIND_FIRST_NOT_OF("abc", "", 2, 2);
+        TEST_FIND_FIRST_NOT_OF("abc", "", 3, -1);
+
+        TEST_FIND_FIRST_NOT_OF("abcde", "a", 0, 1);
+        TEST_FIND_FIRST_NOT_OF("abcde", "abc", 2, 3);
+        TEST_FIND_FIRST_NOT_OF("abcde", "abc", 3, 3);
+        TEST_FIND_FIRST_NOT_OF("abcde", "abc", 4, 4);
+        TEST_FIND_FIRST_NOT_OF("abcde", "abcde", 4, -1);
+
+        TEST_FIND_FIRST_NOT_OF("abcde", "abc", -1, 3);
+        TEST_FIND_FIRST_NOT_OF("abcde", "abc", 99, -1);
+
+        TEST_FIND_FIRST_NOT_OF("aaaaaa", "a", 0, -1);
+        TEST_FIND_FIRST_NOT_OF("bbbbbb", "xyz", 0, 0);
+        TEST_FIND_FIRST_NOT_OF("aaaaab", "a", 0, 5);
+
+        {
+            String s(TEST_TEXT("a\0b\0c"), 5);
+            String rejects(TEST_TEXT("\0"), 1);
+
+            TEST_EXPECT_EQ(s.FindFirstNotOf(TEST_TEXT("a"), 0), 1);
+            TEST_EXPECT_EQ(s.FindFirstNotOf(TEST_TEXT("\0"), 0), 0);
+            TEST_EXPECT_EQ(s.FindFirstNotOf(rejects, 1), 2);
+
+            rejects = String(TEST_TEXT("b\0"), 2);
+            TEST_EXPECT_EQ(s.FindFirstNotOf(rejects, 0), 0);
+        }
+
+        std::string ctl = "\t\n\r abc";
+
+        TEST_FIND_FIRST_NOT_OF("\t\n\r abc", "\t\n\r", 0, 3);
+        TEST_FIND_FIRST_NOT_OF("\t\n\r abc", " \t\n\r", 0, 4);
+        TEST_FIND_FIRST_NOT_OF("\t\n\r abc", "abc\t\n\r ", 0, -1);
+
+        TEST_FIND_FIRST_NOT_OF("###@@@", "#@", 0, -1);
+        TEST_FIND_FIRST_NOT_OF("$$$xyz", "$", 0, 3);
+        TEST_FIND_FIRST_NOT_OF("hi", "abcdefghijklmnopqrstuvwxyz", 0, -1);
+        TEST_FIND_FIRST_NOT_OF("xxxxxXxxxxx", "x", 0, 5);
+    }
+
+    TEST_COMMENT("FindLastOf");
+    {
+#define TEST_FIND_LAST_OF(s1, s2, start, expectedPos) \
+    TEST_EXPECT_EQ(String{TEST_TEXT(s1)}.FindLastOf(TEST_TEXT(s2), start), expectedPos)
+
+        TEST_FIND_LAST_OF("abcdef", 'a', String::kInvalidIndex, 0);
+        TEST_FIND_LAST_OF("abcdef", 'f', String::kInvalidIndex, 5);
+        TEST_FIND_LAST_OF("abcdef", '$', String::kInvalidIndex, -1);
+        TEST_FIND_LAST_OF("", '$', String::kInvalidIndex, -1);
+        TEST_FIND_LAST_OF("aadfddabcdaef", 'd', 7, 5);
+
+        TEST_FIND_LAST_OF("abcdef", "f", String::kInvalidIndex, 5);
+        TEST_FIND_LAST_OF("abcdef", "cf", String::kInvalidIndex, 5);
+        TEST_FIND_LAST_OF("abcdef", "fc", String::kInvalidIndex, 5);
+        TEST_FIND_LAST_OF("abcdef", "xyz", String::kInvalidIndex, -1);
+
+        TEST_FIND_LAST_OF("", "", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_OF("", "abc", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_OF("abc", "", String::kInvalidIndex, -1);
+
+        TEST_FIND_LAST_OF("abcabc", "c", String::kInvalidIndex, 5);
+        TEST_FIND_LAST_OF("abcabc", "ccc", String::kInvalidIndex, 5);
+        TEST_FIND_LAST_OF("abcabc", "bcbcbcbc", String::kInvalidIndex, 5);
+
+        TEST_FIND_LAST_OF("zzzabc", "z", String::kInvalidIndex, 2);
+        TEST_FIND_LAST_OF("abczzz", "z", String::kInvalidIndex, 5);
+        TEST_FIND_LAST_OF("zzzzzz", "z", String::kInvalidIndex, 5);
+        TEST_FIND_LAST_OF("zzzzzz", "x", String::kInvalidIndex, -1);
+
+        TEST_FIND_LAST_OF("abcdef", "f", 5, 5);
+        TEST_FIND_LAST_OF("abcdef", "f", 4, -1);
+
+        TEST_FIND_LAST_OF("abcdef", "c", 2, 2);
+        TEST_FIND_LAST_OF("abcdef", "c", 1, -1);
+
+        TEST_FIND_LAST_OF("abcdef", "bcf", 3, 2);
+        TEST_FIND_LAST_OF("abcdef", "bcf", 5, 5);
+
+        TEST_FIND_LAST_OF("abcdef", "xyz", 999, -1);
+
+        {
+            String s(TEST_TEXT("a\0b\0c"), 5);
+
+            String n1(TEST_TEXT("\0"), 1);
+            TEST_EXPECT_EQ(s.FindLastOf(n1), 3);
+
+            String n2(TEST_TEXT("c\0"), 2);
+            TEST_EXPECT_EQ(s.FindLastOf(n2), 4);
+        }
+        String ctl{TEST_TEXT("\t\n\r abc")};
+
+        TEST_EXPECT_EQ(ctl.FindLastOf(TEST_TEXT("\t")), 0);
+        TEST_EXPECT_EQ(ctl.FindLastOf(TEST_TEXT(" \n")), 3);
+        TEST_EXPECT_EQ(ctl.FindLastOf(TEST_TEXT("\r")), 2);
+        TEST_EXPECT_EQ(ctl.FindLastOf(TEST_TEXT("\t\n\r a")), 4);
+
+        TEST_FIND_LAST_OF("abcXYZabc", "ABC", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_OF("abcXYZabc", "XYZ", String::kInvalidIndex, 5);
+        TEST_FIND_LAST_OF("abcXYZabc", "123", String::kInvalidIndex, -1);
+
+        String str{TEST_TEXT("aaaa\0aaaa"), 9};
+        String reject{TEST_TEXT("\0"), 1};
+        TEST_EXPECT_EQ(str.FindLastOf(TEST_TEXT("a")), 8);
+        TEST_EXPECT_EQ(str.FindLastOf(reject), 4);
+
+        TEST_FIND_LAST_OF("@@@!!**", "@!*", String::kInvalidIndex, 6);
+    }
+
+    TEST_COMMENT("FindLastNotOf");
+    {
+#define TEST_FIND_LAST_NOT_OF(s1, s2, start, expectedPos) \
+    TEST_EXPECT_EQ(String{TEST_TEXT(s1)}.FindLastNotOf(TEST_TEXT(s2), start), expectedPos)
+
+        TEST_FIND_LAST_NOT_OF("abcdef", 'f', String::kInvalidIndex, 4);
+        TEST_FIND_LAST_NOT_OF("abc", 'a', String::kInvalidIndex, 2);
+        TEST_FIND_LAST_NOT_OF("", "a", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_NOT_OF("aasdfasasddav", 'a', 8, 8);
+
+        TEST_FIND_LAST_NOT_OF("abc", "a", String::kInvalidIndex, 2);
+        TEST_FIND_LAST_NOT_OF("abc", "abc", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_NOT_OF("abc", "", String::kInvalidIndex, 2);
+        TEST_FIND_LAST_NOT_OF("", "abc", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_NOT_OF("a", "a", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_NOT_OF("a", "b", String::kInvalidIndex, 0);
+        TEST_FIND_LAST_NOT_OF("aaaaa", "a", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_NOT_OF("aaaaab", "a", String::kInvalidIndex, 5);
+        TEST_FIND_LAST_NOT_OF("abcabcabc", "c", String::kInvalidIndex, 7);
+        TEST_FIND_LAST_NOT_OF("abcabcabc", "b", String::kInvalidIndex, 8);
+
+        TEST_FIND_LAST_NOT_OF("abcdef", "f", 3, 3);
+        TEST_FIND_LAST_NOT_OF("abcdef", "a", 0, -1);
+        TEST_FIND_LAST_NOT_OF("abcdef", "a", 5, 5);
+        TEST_FIND_LAST_NOT_OF("abcdef", "abc", 2, -1);
+        TEST_FIND_LAST_NOT_OF("abcdef", "abc", 3, 3);
+        TEST_FIND_LAST_NOT_OF("abcdef", "def", 5, 2);
+        TEST_FIND_LAST_NOT_OF("abcdef", "def", 2, 2);
+        TEST_FIND_LAST_NOT_OF("abcdef", "def", 0, 0);
+        TEST_FIND_LAST_NOT_OF("abcdef", "", 3, 3);
+        TEST_FIND_LAST_NOT_OF("abcdef", "", 100, 5);
+
+        TEST_FIND_LAST_NOT_OF("   ", " ", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_NOT_OF(" \t\n", " \n\t", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_NOT_OF(" \t\nabc", " \n\t", String::kInvalidIndex, 5);
+        TEST_FIND_LAST_NOT_OF(" \t\nabc", " \n\t", 2, -1);
+        TEST_FIND_LAST_NOT_OF("   a  ", " ", String::kInvalidIndex, 3);
+        TEST_FIND_LAST_NOT_OF("   a  ", " ", 2, -1);
+        TEST_FIND_LAST_NOT_OF("   a  ", " ", 3, 3);
+        TEST_FIND_LAST_NOT_OF("   a  ", " ", 5, 3);
+        TEST_FIND_LAST_NOT_OF("   a  ", " ", 100, 3);
+        TEST_FIND_LAST_NOT_OF("   a  ", "a", String::kInvalidIndex, 5);
+
+        TEST_FIND_LAST_NOT_OF("1234567890", "0123456789", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_NOT_OF("1234567890", "012345678", String::kInvalidIndex, 8);
+        TEST_FIND_LAST_NOT_OF("!@#$%^&*()", "!@#$%^&*()", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_NOT_OF("!@#$%^&*()abc", "!@#$%^&*()", String::kInvalidIndex, 12);
+        TEST_FIND_LAST_NOT_OF("abc!@#", "abc", String::kInvalidIndex, 5);
+        TEST_FIND_LAST_NOT_OF("abc!@#", "abc", 2, -1);
+        TEST_FIND_LAST_NOT_OF("abc!@#", "abc", 5, 5);
+        TEST_FIND_LAST_NOT_OF("11122333", "1", String::kInvalidIndex, 7);
+        TEST_FIND_LAST_NOT_OF("11122333", "1", 4, 4);
+        TEST_FIND_LAST_NOT_OF("00000", "0", 2, -1);
+
+        TEST_FIND_LAST_NOT_OF("aaaabbbbcccc", "abc", String::kInvalidIndex, -1);
+        TEST_FIND_LAST_NOT_OF("aaaabbbbcccc", "a", 3, -1);
+        TEST_FIND_LAST_NOT_OF("aaaabbbbcccc", "b", 7, 3);
+        TEST_FIND_LAST_NOT_OF("", "", 0, -1);
+    }
+
+    TEST_COMMENT("Count");
+    {
+        String substr{TEST_TEXT("is")};
+        String text{TEST_TEXT("This is a string")};
+        String other{TEST_TEXT("cococococo")};
+        String empty;
+
+        TEST_EXPECT_EQ(text.Count(TEST_TEXT('i')), 3);
+        TEST_EXPECT_EQ(text.Count(TEST_TEXT('i'), 4), 2);
+        TEST_EXPECT_EQ(text.Count(TEST_TEXT('i'), -4), 3);
+        TEST_EXPECT_EQ(text.Count(TEST_TEXT('i'), 100), 0);
+
+        TEST_EXPECT_EQ(text.Count(substr), 2);
+        TEST_EXPECT_EQ(text.Count(substr, 3), 1);
+
+        TEST_EXPECT_EQ(other.Count(TEST_TEXT("coco")), 2);
+
+        TEST_EXPECT_EQ(empty.Count(TEST_TEXT('a')), 0);
+        TEST_EXPECT_EQ(empty.Count(TEST_TEXT("")), 1);
+
+        text = TEST_TEXT("aaaa");
+        TEST_EXPECT_EQ(text.Count(TEST_TEXT("")), 5);
+
+        other = TEST_TEXT("banana");
+        TEST_EXPECT_EQ(other.Count(TEST_TEXT("ana")), 1);
+    }
 }
