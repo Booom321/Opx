@@ -1,0 +1,10 @@
+---
+Checks:
+  - -*
+WarningsAsErrors: ''
+HeaderFileExtensions:
+  - hpp
+ImplementationFileExtensions:
+  - cpp
+HeaderFilterRegex: ''
+SystemHeaders: false
